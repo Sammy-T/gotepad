@@ -1,1 +1,15 @@
 @import '@picocss/pico';
+
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+main textarea {
+    height: 100%;
+}
