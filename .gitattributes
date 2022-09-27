@@ -1,0 +1,26 @@
+# Set the default behavior
+* text=auto
+
+# Web frontend files
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+
+# Go files
+*.mod text eol=lf
+*.sum text eol=lf
+*.go text eol=lf
+
+# Config files
+*.json text eol=lf
+
+# Text & markdown files
+*.txt text eol=lf
+*.md text eol=lf
+
+# Images
+*.png binary
+
+# Git files
+.gitignore text eol=lf
