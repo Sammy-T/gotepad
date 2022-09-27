@@ -1,6 +1,3 @@
-import './style.css';
-import './app.css';
-
 import logo from './assets/images/logo-universal.png';
 import {Greet} from '../wailsjs/go/main/App';
 
