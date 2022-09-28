@@ -41,9 +41,14 @@ func createAppMenu() *menu.Menu {
 	appMenu := menu.NewMenu()
 
 	fileMenu := appMenu.AddSubmenu("File")
+	fileMenu.AddText("New", keys.CmdOrCtrl("n"), newFileCallback)
 	fileMenu.AddText("Open", keys.CmdOrCtrl("o"), openFileCallback)
 
 	return appMenu
+}
+
+func newFileCallback(data *menu.CallbackData) {
+	app.NewFile()
 }
 
 func openFileCallback(data *menu.CallbackData) {

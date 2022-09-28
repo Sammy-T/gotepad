@@ -24,6 +24,11 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
+// NewFile emits an 'onNewFile' event
+func (a *App) NewFile() {
+	runtime.EventsEmit(a.ctx, "onNewFile")
+}
+
 // OpenFileDialog opens a file dialog with selection filtered to text files
 func (a *App) OpenFileDialog() {
 	fileFilter := runtime.FileFilter{
