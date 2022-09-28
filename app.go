@@ -8,6 +8,11 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
+var fileFilters = []runtime.FileFilter{
+	{DisplayName: "Text files", Pattern: "*.txt"},
+	{DisplayName: "All files (*.*)", Pattern: "*.*"},
+}
+
 // App struct
 type App struct {
 	ctx      context.Context
@@ -38,12 +43,8 @@ func (a *App) NewFile() {
 
 // OpenFile opens a file dialog and reads the selected file
 func (a *App) OpenFile() {
-	fileFilter := runtime.FileFilter{
-		DisplayName: "Text files",
-		Pattern:     "*.txt",
-	}
 	options := runtime.OpenDialogOptions{
-		Filters: []runtime.FileFilter{fileFilter},
+		Filters: fileFilters,
 	}
 
 	// Open the dialog
@@ -70,12 +71,9 @@ func (a *App) OpenFile() {
 
 // SaveAs opens a file dialog and saves the contents at the selected path
 func (a *App) SaveAs(contents string) {
-	fileFilter := runtime.FileFilter{
-		DisplayName: "Text files",
-		Pattern:     "*.txt",
-	}
 	options := runtime.SaveDialogOptions{
-		Filters: []runtime.FileFilter{fileFilter},
+		DefaultFilename: "*.txt",
+		Filters:         fileFilters,
 	}
 
 	// Open the dialog
@@ -98,6 +96,7 @@ func (a *App) Save(contents string) {
 		a.SaveAs(contents)
 		return
 	}
+	log.Printf("Save path: %v", a.filepath)
 
 	var response ActionResponse
 
