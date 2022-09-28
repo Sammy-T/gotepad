@@ -7,10 +7,21 @@ html, body {
 
 body {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+main {
+    flex-grow: 1;
 }
 
 main textarea {
     height: 100%;
     resize: none;
+}
+
+body footer {
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--table-row-stripped-background-color);
 }
