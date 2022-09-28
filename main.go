@@ -12,18 +12,16 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
-var app *App
-
 func main() {
 	// Create an instance of the app structure
-	app = NewApp()
+	app := NewApp()
 
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:            "gotepad",
 		Width:            1024,
 		Height:           768,
-		Menu:             createAppMenu(),
+		Menu:             createAppMenu(app),
 		Assets:           assets,
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		OnStartup:        app.startup,
@@ -37,7 +35,10 @@ func main() {
 	}
 }
 
-func createAppMenu() *menu.Menu {
+func createAppMenu(app *App) *menu.Menu {
+	newFileCallback := func(data *menu.CallbackData) { app.NewFile() }
+	openFileCallback := func(data *menu.CallbackData) { app.OpenFileDialog() }
+
 	appMenu := menu.NewMenu()
 
 	fileMenu := appMenu.AddSubmenu("File")
@@ -45,12 +46,4 @@ func createAppMenu() *menu.Menu {
 	fileMenu.AddText("Open", keys.CmdOrCtrl("o"), openFileCallback)
 
 	return appMenu
-}
-
-func newFileCallback(data *menu.CallbackData) {
-	app.NewFile()
-}
-
-func openFileCallback(data *menu.CallbackData) {
-	app.OpenFileDialog()
 }
