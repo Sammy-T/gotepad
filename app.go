@@ -2,7 +2,10 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
+	"os"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App struct
@@ -21,7 +24,30 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
+// OpenFileDialog opens a file dialog with selection filtered to text files
+func (a *App) OpenFileDialog() {
+	fileFilter := runtime.FileFilter{
+		DisplayName: "Text files",
+		Pattern:     "*.txt",
+	}
+	options := runtime.OpenDialogOptions{
+		Filters: []runtime.FileFilter{fileFilter},
+	}
+
+	// Open the dialog
+	filepath, err := runtime.OpenFileDialog(a.ctx, options)
+	if err != nil {
+		log.Printf("Error retrieving file path. %v", err)
+		return
+	}
+
+	// Read the file at the selected file path
+	data, err := os.ReadFile(filepath)
+	if err != nil {
+		log.Printf("Error reading file. %v", err)
+		return
+	}
+
+	// Emit an event with the read file text attached
+	runtime.EventsEmit(a.ctx, "onFileRead", string(data))
 }
