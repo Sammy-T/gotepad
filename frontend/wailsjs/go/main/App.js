@@ -6,6 +6,22 @@ export function NewFile() {
   return window['go']['main']['App']['NewFile']();
 }
 
-export function OpenFileDialog() {
-  return window['go']['main']['App']['OpenFileDialog']();
+export function OpenFile() {
+  return window['go']['main']['App']['OpenFile']();
+}
+
+export function RequestSave() {
+  return window['go']['main']['App']['RequestSave']();
+}
+
+export function RequestSaveAs() {
+  return window['go']['main']['App']['RequestSaveAs']();
+}
+
+export function Save(arg1) {
+  return window['go']['main']['App']['Save'](arg1);
+}
+
+export function SaveAs(arg1) {
+  return window['go']['main']['App']['SaveAs'](arg1);
 }

@@ -37,13 +37,24 @@ func main() {
 
 func createAppMenu(app *App) *menu.Menu {
 	newFileCallback := func(data *menu.CallbackData) { app.NewFile() }
-	openFileCallback := func(data *menu.CallbackData) { app.OpenFileDialog() }
+	openFileCallback := func(data *menu.CallbackData) { app.OpenFile() }
+
+	saveFileCallback := func(data *menu.CallbackData) {
+		switch data.MenuItem.Label {
+		case "Save":
+			app.RequestSave()
+		case "Save As":
+			app.RequestSaveAs()
+		}
+	}
 
 	appMenu := menu.NewMenu()
 
 	fileMenu := appMenu.AddSubmenu("File")
 	fileMenu.AddText("New", keys.CmdOrCtrl("n"), newFileCallback)
 	fileMenu.AddText("Open", keys.CmdOrCtrl("o"), openFileCallback)
+	fileMenu.AddText("Save", keys.CmdOrCtrl("s"), saveFileCallback)
+	fileMenu.AddText("Save As", keys.Combo("s", keys.CmdOrCtrlKey, keys.ShiftKey), saveFileCallback)
 
 	return appMenu
 }
