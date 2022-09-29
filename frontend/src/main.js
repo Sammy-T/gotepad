@@ -7,12 +7,35 @@ const lineCount = document.querySelector('#line-count');
 
 // Listen for Wails events
 EventsOn('onNewFile', () => textArea.value = '');
-EventsOn('onFileRead', fileText => textArea.value = fileText);
-EventsOn('onFileSaved', response => console.log(response));
+EventsOn('onFileRead', onFileRead);
+EventsOn('onFileSaved', onFileSaved);
 
 EventsOn('onRequestSaveAs', () => SaveAs(textArea.value));
 EventsOn('onRequestSave', () => Save(textArea.value));
 
+/**
+ * Responds to the custom 'onFileRead' Wails event and updates the text area
+ * with the file text.
+ * @param {String} fileText 
+ */
+function onFileRead(fileText) {
+    textArea.value = fileText;
+    saveStatus.innerText = 'saved';
+}
+
+/**
+ * Responds to the custom 'onFileSaved' Wails event and updates the save status.
+ * @param {Object} response 
+ */
+function onFileSaved(response) {
+    console.log(response);
+    saveStatus.innerText = 'saved';
+}
+
+/**
+ * Responds to text area changes and updates the line count.
+ * @param {Event} event - The triggering event.
+ */
 function onSelectionChanged(event) {
     const targetId = event.target.activeElement?.id || event.target.id;
 
@@ -38,7 +61,16 @@ function onSelectionChanged(event) {
     lineCount.innerText = `line ${line}, col ${col} - ${totalLines} ${ending}`;
 }
 
+/**
+ * Responds to input value changes.
+ * @param {Event} event - The triggering event. 
+ */
+function onInput(event) {
+    saveStatus.innerText = 'unsaved';
+    onSelectionChanged(event);
+}
+
 // There's overlap between these listeners but it's the only way I've found
 // to update on input, backspace, and selection changes.
-textArea.addEventListener('input', onSelectionChanged);
+textArea.addEventListener('input', onInput);
 document.addEventListener('selectionchange', onSelectionChanged);
