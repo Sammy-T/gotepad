@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -16,7 +17,7 @@ var fileFilters = []runtime.FileFilter{
 // App struct
 type App struct {
 	ctx      context.Context
-	filepath string
+	filePath string
 }
 
 type ActionResponse struct {
@@ -35,9 +36,10 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-// NewFile emits an 'onNewFile' event
+// NewFile clears the file path, sets the window title, and emits an 'onNewFile' event
 func (a *App) NewFile() {
-	a.filepath = ""
+	a.filePath = ""
+	runtime.WindowSetTitle(a.ctx, "gotepad")
 	runtime.EventsEmit(a.ctx, "onNewFile")
 }
 
@@ -48,18 +50,19 @@ func (a *App) OpenFile() {
 	}
 
 	// Open the dialog
-	filepath, err := runtime.OpenFileDialog(a.ctx, options)
+	filePath, err := runtime.OpenFileDialog(a.ctx, options)
 	if err != nil {
 		log.Printf("Error retrieving file path. %v", err)
 		return
-	} else if filepath == "" {
+	} else if filePath == "" {
 		return // Return early if the user cancelled
 	}
 
-	a.filepath = filepath
+	a.filePath = filePath
+	runtime.WindowSetTitle(a.ctx, "gotepad - "+filepath.Base(filePath))
 
 	// Read the file at the selected file path
-	data, err := os.ReadFile(filepath)
+	data, err := os.ReadFile(filePath)
 	if err != nil {
 		log.Printf("Error reading file. %v", err)
 		return
@@ -77,31 +80,33 @@ func (a *App) SaveAs(contents string) {
 	}
 
 	// Open the dialog
-	filepath, err := runtime.SaveFileDialog(a.ctx, options)
+	filePath, err := runtime.SaveFileDialog(a.ctx, options)
 	if err != nil {
 		log.Printf("Error retrieving file path. %v", err)
 		return
-	} else if filepath == "" {
+	} else if filePath == "" {
 		return // Return early if the user cancelled
 	}
 
-	a.filepath = filepath
+	a.filePath = filePath
 	a.Save(contents)
 }
 
 // Save writes the contents to the file at the app's filepath
 func (a *App) Save(contents string) {
 	// Check for a valid filepath
-	if a.filepath == "" {
+	if a.filePath == "" {
 		a.SaveAs(contents)
 		return
 	}
-	log.Printf("Save path: %v", a.filepath)
+
+	log.Printf("Save path: %v", a.filePath)
+	runtime.WindowSetTitle(a.ctx, "gotepad - "+filepath.Base(a.filePath))
 
 	var response ActionResponse
 
 	// Save the file at the selected file path
-	err := os.WriteFile(a.filepath, []byte(contents), 0666)
+	err := os.WriteFile(a.filePath, []byte(contents), 0666)
 	if err != nil {
 		response.Status = "error"
 		response.Message = err.Error()
