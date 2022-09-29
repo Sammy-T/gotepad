@@ -25,3 +25,7 @@ body footer {
     justify-content: space-between;
     background-color: var(--table-row-stripped-background-color);
 }
+
+body footer * {
+    min-width: 5rem;
+}
