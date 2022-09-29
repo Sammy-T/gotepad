@@ -1,9 +1,16 @@
-import {EventsOn} from '../wailsjs/runtime/runtime';
-import {SaveAs, Save} from '../wailsjs/go/main/App';
+import {Environment, EventsOn} from '../wailsjs/runtime/runtime';
+import {NewFile, OpenFile, SaveAs, Save} from '../wailsjs/go/main/App';
+
+let platform;
 
 const textArea = document.querySelector('#text-input');
 const saveStatus = document.querySelector('#save-status');
 const lineCount = document.querySelector('#line-count');
+
+// Retrieve the platform from the environment
+Environment()
+    .then(info => platform = info.platform)
+    .catch(err => console.error('Unable to get environment.', err));
 
 // Listen for Wails events
 EventsOn('onNewFile', () => textArea.value = '');
@@ -70,7 +77,35 @@ function onInput(event) {
     onSelectionChanged(event);
 }
 
+/**
+ * Responds to keyboard accelerator shortcut inputs.
+ * @param {Event} event - The triggering event.
+ */
+function onKey(event) {
+    const cmdOrCtrl = (platform === 'darwin') ? 'metaKey' : 'ctrlKey';
+
+    if(!event[cmdOrCtrl]) return; // Ignore non-accelerator inputs
+
+    switch(event.key) {
+        case 'n':
+            NewFile();
+            break;
+        case 'o':
+            OpenFile();
+            break;
+        case 's':
+            if(event.shiftKey) {
+                SaveAs(textArea.value);
+            } else {
+                Save(textArea.value);
+            }
+            break;
+    }
+}
+
 // There's overlap between these listeners but it's the only way I've found
 // to update on input, backspace, and selection changes.
 textArea.addEventListener('input', onInput);
 document.addEventListener('selectionchange', onSelectionChanged);
+
+document.addEventListener('keydown', onKey);
