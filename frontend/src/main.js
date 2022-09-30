@@ -13,7 +13,7 @@ const lineCount = document.querySelector('#line-count');
  * Responds to the custom 'onNewFile' Wails event and clears the text area.
  */
 function onNewFile() {
-    textArea.value = ''
+    textArea.value = '';
     saveStatus.innerText = 'unsaved';
 }
 
