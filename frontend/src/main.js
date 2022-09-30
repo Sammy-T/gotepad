@@ -3,22 +3,11 @@ import {NewFile, OpenFile, SaveAs, Save} from '../wailsjs/go/main/App';
 
 let platform;
 
+const menuDropdowns = document.querySelectorAll('#menu details');
+const menuItems = document.querySelectorAll('#menu a');
 const textArea = document.querySelector('#text-input');
 const saveStatus = document.querySelector('#save-status');
 const lineCount = document.querySelector('#line-count');
-
-// Retrieve the platform from the environment
-Environment()
-    .then(info => platform = info.platform)
-    .catch(err => console.error('Unable to get environment.', err));
-
-// Listen for Wails events
-EventsOn('onNewFile', () => textArea.value = '');
-EventsOn('onFileRead', onFileRead);
-EventsOn('onFileSaved', onFileSaved);
-
-EventsOn('onRequestSaveAs', () => SaveAs(textArea.value));
-EventsOn('onRequestSave', () => Save(textArea.value));
 
 /**
  * Responds to the custom 'onFileRead' Wails event and updates the text area
@@ -69,7 +58,7 @@ function onSelectionChanged(event) {
 }
 
 /**
- * Responds to input value changes.
+ * Responds to input value changes. Updates the save status and line count.
  * @param {Event} event - The triggering event. 
  */
 function onInput(event) {
@@ -78,7 +67,7 @@ function onInput(event) {
 }
 
 /**
- * Responds to keyboard accelerator shortcut inputs.
+ * Responds to key events. Triggers the action corresponding to the received keyboard shortcut.
  * @param {Event} event - The triggering event.
  */
 function onKey(event) {
@@ -103,9 +92,58 @@ function onKey(event) {
     }
 }
 
+/**
+ * Responds to menu item selection. Triggers the action corresponding to the selected menu item.
+ * @param {Element} item - The selected menu item.
+ */
+function onMenuItemClick(item) {
+    switch(item.id) {
+        case 'new-file':
+            NewFile();
+            break;
+        case 'open-file':
+            OpenFile();
+            break;
+        case 'save-file':
+            Save(textArea.value);
+            break;
+        case 'save-file-as':
+            SaveAs(textArea.value);
+            break;
+    }
+
+    // Close any open menu dropdowns
+    menuDropdowns.forEach(dropdown => dropdown.removeAttribute('open'));
+}
+
+function initMenuItem(item) {
+    // Replace 'Ctrl' with 'Cmd' on Mac os
+    if(platform === 'darwin') {
+        const shortcut = item.querySelector('small:last-child');
+        shortcut.textContent = shortcut.textContent.replace('Ctrl', 'Cmd');
+    }
+
+    item.addEventListener('click', () => onMenuItemClick(item));
+}
+
+// Retrieve the platform from the environment
+Environment()
+    .then(info => platform = info.platform)
+    .catch(err => console.error('Unable to get environment.', err));
+
+// Listen for Wails events
+EventsOn('onNewFile', () => textArea.value = '');
+EventsOn('onFileRead', onFileRead);
+EventsOn('onFileSaved', onFileSaved);
+
+EventsOn('onRequestSaveAs', () => SaveAs(textArea.value));
+EventsOn('onRequestSave', () => Save(textArea.value));
+
 // There's overlap between these listeners but it's the only way I've found
 // to update on input, backspace, and selection changes.
 textArea.addEventListener('input', onInput);
 document.addEventListener('selectionchange', onSelectionChanged);
 
+// Set up the menu and key interactions
+menuItems.forEach(initMenuItem);
 document.addEventListener('keydown', onKey);
