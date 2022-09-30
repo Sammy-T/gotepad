@@ -12,6 +12,23 @@
     </head>
 
     <body>
+        <nav id="menu">
+            <ul>
+                <li>
+                    <details role="list">
+                        <summary aria-haspopup="listbox" role="link"><small>File</small></summary>
+
+                        <ul role="listbox">
+                            <li><a id="new-file"><small>New</small><small>Ctrl+N</small></a></li>
+                            <li><a id="open-file"><small>Open</small><small>Ctrl+O</small></a></li>
+                            <li><a id="save-file"><small>Save</small><small>Ctrl+S</small></a></li>
+                            <li><a id="save-file-as"><small>Save As</small><small>Ctrl+Shift+S</small></a></li>
+                        </ul>
+                    </details>
+                </li>
+            </ul>
+        </nav>
+
         <main class="container">
             <textarea id="text-input" name="text-input" autofocus></textarea>
         </main>

@@ -10,6 +10,16 @@ body {
     flex-direction: column;
 }
 
+#menu {
+    padding: 0 1rem;
+}
+
+#menu li a {
+    min-width: 12rem;
+    display: flex;
+    justify-content: space-between;
+}
+
 main {
     flex-grow: 1;
 }
