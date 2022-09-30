@@ -10,6 +10,15 @@ const saveStatus = document.querySelector('#save-status');
 const lineCount = document.querySelector('#line-count');
 
 /**
+ * Responds to the custom 'onNewFile' Wails event and clears the text area.
+ */
+function onNewFile() {
+    textArea.value = ''
+    saveStatus.innerText = 'unsaved';
+}
+
+
+/**
  * Responds to the custom 'onFileRead' Wails event and updates the text area
  * with the file text.
  * @param {String} fileText 
@@ -132,7 +141,7 @@ Environment()
     .catch(err => console.error('Unable to get environment.', err));
 
 // Listen for Wails events
-EventsOn('onNewFile', () => textArea.value = '');
+EventsOn('onNewFile', onNewFile);
 EventsOn('onFileRead', onFileRead);
 EventsOn('onFileSaved', onFileSaved);
 
