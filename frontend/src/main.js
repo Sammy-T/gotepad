@@ -107,18 +107,27 @@ function onKey(event) {
     }
 }
 
+function onFind(event) {
+    event.preventDefault();
+    console.log(event);
+}
+
 function toggleFind() {
     // Determine if the 'find' form is already displayed
     let findForm = document.querySelector('#find');
     
     if(findForm) {
         header.innerHTML = ''; // Remove the form
+        textArea.focus();
         return;
     }
 
     // Add the form
     findForm = templateFind.content.firstElementChild.cloneNode(true);
+    findForm.addEventListener('submit', onFind);
     header.appendChild(findForm);
+
+    findForm.querySelector('input').focus();
 }
 
 /**
