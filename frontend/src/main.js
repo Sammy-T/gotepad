@@ -5,9 +5,12 @@ let platform;
 
 const menuDropdowns = document.querySelectorAll('#menu details');
 const menuItems = document.querySelectorAll('#menu a');
+const header = document.querySelector('body > header');
 const textArea = document.querySelector('#text-input');
 const saveStatus = document.querySelector('#save-status');
 const lineCount = document.querySelector('#line-count');
+
+const templateFind = document.querySelector('#template-find');
 
 /**
  * Responds to the custom 'onNewFile' Wails event and clears the text area.
@@ -98,7 +101,24 @@ function onKey(event) {
                 Save(textArea.value);
             }
             break;
+        case 'f':
+            toggleFind();
+            break;
     }
+}
+
+function toggleFind() {
+    // Determine if the 'find' form is already displayed
+    let findForm = document.querySelector('#find');
+    
+    if(findForm) {
+        header.innerHTML = ''; // Remove the form
+        return;
+    }
+
+    // Add the form
+    findForm = templateFind.content.firstElementChild.cloneNode(true);
+    header.appendChild(findForm);
 }
 
 /**
@@ -118,6 +138,9 @@ function onMenuItemClick(item) {
             break;
         case 'save-file-as':
             SaveAs(textArea.value);
+            break;
+        case 'find-term':
+            toggleFind();
             break;
     }
 
