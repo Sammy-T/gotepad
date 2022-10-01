@@ -20,8 +20,30 @@ body {
     justify-content: space-between;
 }
 
-main {
+body > header {
+    padding: 0 1rem;
+}
+
+header form, header fieldset {
+    margin: 0;
+}
+
+.search-field {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.search-field input, .search-field, button {
+    width: auto;
+    margin: 0;
+}
+
+body > main {
     flex-grow: 1;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
 }
 
 main textarea {
@@ -29,13 +51,13 @@ main textarea {
     resize: none;
 }
 
-body footer {
+body > footer {
     padding: 0.75rem 1rem;
     display: flex;
     justify-content: space-between;
     background-color: var(--table-row-stripped-background-color);
 }
 
-body footer * {
+body > footer * {
     min-width: 5rem;
 }
