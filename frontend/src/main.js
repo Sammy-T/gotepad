@@ -2,6 +2,8 @@ import {Environment, EventsOn} from '../wailsjs/runtime/runtime';
 import {NewFile, OpenFile, SaveAs, Save} from '../wailsjs/go/main/App';
 
 let platform;
+let restoreText; // For storing/restoring text while transitioning between header focus
+const restoreSelection = {start: -1, end: -1};
 
 const menuDropdowns = document.querySelectorAll('#menu details');
 const menuItems = document.querySelectorAll('#menu a');
@@ -109,7 +111,42 @@ function onKey(event) {
 
 function onFind(event) {
     event.preventDefault();
-    console.log(event);
+    
+    const formData = new FormData(event.target);
+    const searchTerm = formData.get('search-term');
+    
+    // Get the selection/cursor position
+    const selectionIndex = (textArea.selectionEnd === textArea.textLength) ? 0 : textArea.selectionEnd;
+
+    // Create a copy of the text starting from the selection position
+    const searchText = restoreText.substring(selectionIndex);
+
+    if(searchTerm === '' || searchText === '') return;
+
+    const searchIndex = searchText.indexOf(searchTerm); // Search for the text
+    
+    // If the text wasn't found, reset the textarea and selection
+    if(searchIndex < 0) {
+        textArea.value = restoreText;
+        textArea.selectionStart = 0;
+        textArea.selectionEnd = 0;
+        return;
+    }
+
+    // Determine the index as it would be in the original text
+    const matchIndex = searchIndex + selectionIndex;
+
+    // Display brackets around the matched text
+    textArea.value = restoreText.slice(0, matchIndex) + `[${searchTerm}]` 
+        + restoreText.slice(matchIndex + searchTerm.length);
+    
+    // Move the selection while including the bracket-enclosed match
+    textArea.selectionStart = matchIndex;
+    textArea.selectionEnd = matchIndex + searchTerm.length + 2;
+
+    // Store where the selection would be in the original text
+    restoreSelection.start = matchIndex;
+    restoreSelection.end = matchIndex + searchTerm.length;
 }
 
 function toggleFind() {
@@ -122,10 +159,29 @@ function toggleFind() {
         return;
     }
 
-    // Add the form
+    const onFocusIn = function() {
+        restoreText = textArea.value;
+        restoreSelection.start = textArea.selectionStart;
+        restoreSelection.end = textArea.selectionEnd;
+    };
+
+    const onFocusOut = function() {
+        textArea.value = restoreText;
+        textArea.selectionStart = restoreSelection.start;
+        textArea.selectionEnd = restoreSelection.end;
+
+        restoreText = '';
+        restoreSelection.start = -1;
+        restoreSelection.end = -1;
+    };
+
     findForm = templateFind.content.firstElementChild.cloneNode(true);
+
     findForm.addEventListener('submit', onFind);
-    header.appendChild(findForm);
+    findForm.addEventListener('focusin', onFocusIn);
+    findForm.addEventListener('focusout', onFocusOut);
+
+    header.appendChild(findForm); // Add the form
 
     findForm.querySelector('input').focus();
 }
