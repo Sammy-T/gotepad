@@ -32,17 +32,27 @@
                         <summary aria-haspopup="listbox" role="link"><small>Edit</small></summary>
 
                         <ul role="listbox">
-                            <li><a><small>Cut</small><small>Ctrl+X</small></a></li>
+                            <!-- <li><a><small>Cut</small><small>Ctrl+X</small></a></li>
                             <li><a><small>Copy</small><small>Ctrl+C</small></a></li>
-                            <li><a><small>Paste</small><small>Ctrl+V</small></a></li>
+                            <li><a><small>Paste</small><small>Ctrl+V</small></a></li> -->
                             <li><a id="find-term"><small>Find</small><small>Ctrl+F</small></a></li>
+                            <li><a id="replace-term"><small>Replace</small><small>Ctrl+H</small></a></li>
                         </ul>
                     </details>
                 </li>
             </ul>
         </nav>
 
-        <header></header>
+        <header>
+            <form id="replace">
+                <fieldset class="search-field">
+                    <input type="search" id="search-term" name="search-term" placeholder="Search Term">
+                    <input type="text" id="replace-term" name="replace-term" placeholder="Replace With">
+                    <button type="submit">Find next</button>
+                    <button type="submit">Replace</button>
+                </fieldset>
+            </form>
+        </header>
 
         <template id="template-find">
             <form id="find">
