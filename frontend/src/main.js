@@ -13,6 +13,7 @@ const saveStatus = document.querySelector('#save-status');
 const lineCount = document.querySelector('#line-count');
 
 const templateFind = document.querySelector('#template-find');
+const templateReplace = document.querySelector('#template-replace');
 
 /**
  * Responds to the custom 'onNewFile' Wails event and clears the text area.
@@ -106,9 +107,38 @@ function onKey(event) {
         case 'f':
             toggleFind();
             break;
+        case 'h':
+            toggleReplace();
+            break;
     }
 }
 
+/**
+ * A helper to make a copy of the text and selection when the header gains focus.
+ */
+function onHeaderFocusIn() {
+    restoreText = textArea.value;
+    restoreSelection.start = textArea.selectionStart;
+    restoreSelection.end = textArea.selectionEnd;
+};
+
+/**
+ * A helper to restore the text area's content using the stored copy when the header loses focus.
+ */
+function onHeaderFocusOut() {
+    textArea.value = restoreText;
+    textArea.selectionStart = restoreSelection.start;
+    textArea.selectionEnd = restoreSelection.end;
+
+    restoreText = '';
+    restoreSelection.start = -1;
+    restoreSelection.end = -1;
+};
+
+/**
+ * Searches for matching text starting from the current selection position.
+ * @param {Event} event 
+ */
 function onFind(event) {
     event.preventDefault();
     
@@ -149,41 +179,108 @@ function onFind(event) {
     restoreSelection.end = matchIndex + searchTerm.length;
 }
 
-function toggleFind() {
-    // Determine if the 'find' form is already displayed
-    let findForm = document.querySelector('#find');
-    
-    if(findForm) {
-        header.innerHTML = ''; // Remove the form
-        textArea.focus();
+/**
+ * Replaces the currently selected text.
+ * @param {Event} event 
+ */
+function onReplace(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const searchTerm = formData.get('search-term');
+    const replaceTerm = formData.get('replace-term');
+
+    // Determine the currently selected text
+    const selectedTerm = restoreText.slice(restoreSelection.start, restoreSelection.end);
+
+    if(searchTerm === '') return;
+
+    // Trigger a search if the selection doesn't encompass any text
+    // or if the selected term doesn't match the search term.
+    if(restoreSelection.start === restoreSelection.end || selectedTerm !== searchTerm) {
+        console.warn(`Term not selected. replace: '${replaceTerm}', selected: '${selectedTerm}'`);
+        onFind(event);
         return;
     }
 
-    const onFocusIn = function() {
-        restoreText = textArea.value;
-        restoreSelection.start = textArea.selectionStart;
-        restoreSelection.end = textArea.selectionEnd;
-    };
+    // Build the replacement text and set the new selection position
+    const replaceText = restoreText.slice(0, restoreSelection.start) + replaceTerm 
+        + restoreText.slice(restoreSelection.end);
+    
+    const selectionIndex = restoreSelection.start + replaceTerm.length;
+    
+    restoreText = replaceText;
+    textArea.value = replaceText;
 
-    const onFocusOut = function() {
-        textArea.value = restoreText;
-        textArea.selectionStart = restoreSelection.start;
-        textArea.selectionEnd = restoreSelection.end;
+    textArea.selectionStart = selectionIndex;
+    textArea.selectionEnd = selectionIndex;
 
-        restoreText = '';
-        restoreSelection.start = -1;
-        restoreSelection.end = -1;
-    };
+    restoreSelection.start = selectionIndex;
+    restoreSelection.end = selectionIndex;
+}
 
-    findForm = templateFind.content.firstElementChild.cloneNode(true);
+/**
+ * Replaces the current header or toggles the 'replace' header.
+ */
+function toggleReplace() {
+    if(checkHeaderContent('replace')) return; // Toggle or replace the header content
 
+    // A helper to route to the appropriate function based on the event's submitter
+    const routeMethod = function(event) {
+        switch(event.submitter.name) {
+            case 'find-button':
+                onFind(event);
+                break;
+            case 'replace-button':
+                onReplace(event);
+                break;
+        }
+    }
+
+    // Create the form from the template
+    const replaceForm = templateReplace.content.firstElementChild.cloneNode(true);
+
+    replaceForm.addEventListener('focusin', onHeaderFocusIn);
+    replaceForm.addEventListener('focusout', onHeaderFocusOut);
+    replaceForm.addEventListener('submit', routeMethod);
+
+    header.appendChild(replaceForm); // Add the form to the header
+
+    replaceForm.querySelector('input').focus();
+}
+
+/**
+ * Replaces the current header or toggles the 'find' header.
+ */
+function toggleFind() {
+    if(checkHeaderContent('find')) return; // Toggle or replace the header content
+
+    // Create the form from the template
+    const findForm = templateFind.content.firstElementChild.cloneNode(true);
+
+    findForm.addEventListener('focusin', onHeaderFocusIn);
+    findForm.addEventListener('focusout', onHeaderFocusOut);
     findForm.addEventListener('submit', onFind);
-    findForm.addEventListener('focusin', onFocusIn);
-    findForm.addEventListener('focusout', onFocusOut);
 
-    header.appendChild(findForm); // Add the form
+    header.appendChild(findForm); // Add the form to the header
 
     findForm.querySelector('input').focus();
+}
+
+/**
+ * Checks for and removes header content. 
+ * @param {String} elementId - The id to search for.
+ * @returns {Boolean} - Whether the found content matches the passed element id.
+ */
+function checkHeaderContent(elementId) {
+    let headerChild = header.firstElementChild;
+    
+    if(headerChild) {
+        header.innerHTML = ''; // Remove the content
+        textArea.focus();
+    }
+    
+    return headerChild?.id === elementId;
 }
 
 /**
@@ -206,6 +303,9 @@ function onMenuItemClick(item) {
             break;
         case 'find-term':
             toggleFind();
+            break;
+        case 'replace-term':
+            toggleReplace();
             break;
     }
 
