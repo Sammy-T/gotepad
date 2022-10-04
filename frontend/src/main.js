@@ -7,6 +7,7 @@ const restoreSelection = {start: -1, end: -1};
 
 const menuDropdowns = document.querySelectorAll('#menu details');
 const menuItems = document.querySelectorAll('#menu a');
+const modals = document.querySelectorAll('dialog');
 const header = document.querySelector('body > header');
 const textArea = document.querySelector('#text-input');
 const saveStatus = document.querySelector('#save-status');
@@ -14,6 +15,8 @@ const lineCount = document.querySelector('#line-count');
 
 const templateFind = document.querySelector('#template-find');
 const templateReplace = document.querySelector('#template-replace');
+
+const modalOptions = document.querySelector('#modal-options');
 
 /**
  * Responds to the custom 'onNewFile' Wails event and clears the text area.
@@ -283,6 +286,38 @@ function checkHeaderContent(elementId) {
     return headerChild?.id === elementId;
 }
 
+function showOptions() {
+    modalOptions.setAttribute('open', '');
+
+    const themeSelect = modalOptions.querySelector('[name="theme-select"]');
+    themeSelect.value = localStorage.getItem('gotepad.theme') || 'auto';
+
+    function handleAction(action) {
+        if(new URL(action.href).hash === '#confirm') {
+            if(themeSelect.value === 'auto') {
+                localStorage.removeItem('gotepad.theme');
+            } else {
+                localStorage.setItem('gotepad.theme', themeSelect.value);
+            }
+
+            updateTheme();
+        }
+
+        modalOptions.removeAttribute('open');
+    }
+
+    const actions = modalOptions.querySelectorAll('footer a');
+    actions.forEach(action => {
+        action.onclick = () => handleAction(action)
+    });
+}
+
+function initModal(modal) {
+    modal.addEventListener('click', event => {
+        if(event.target.tagName === 'DIALOG') modal.removeAttribute('open');
+    });
+}
+
 /**
  * Responds to menu item selection. Triggers the action corresponding to the selected menu item.
  * @param {Element} item - The selected menu item.
@@ -307,6 +342,9 @@ function onMenuItemClick(item) {
         case 'replace-term':
             toggleReplace();
             break;
+        case 'options':
+            showOptions();
+            break;
     }
 
     // Close any open menu dropdowns
@@ -323,6 +361,18 @@ function initMenuItem(item) {
     item.addEventListener('click', () => onMenuItemClick(item));
 }
 
+function updateTheme() {
+    const html = document.querySelector('html');
+    const theme = localStorage.getItem('gotepad.theme');
+    
+    if(!theme) {
+        html.removeAttribute('data-theme');
+        return;
+    }
+
+    html.setAttribute('data-theme', theme);
+}
+
 // Retrieve the platform from the environment
 Environment()
     .then(info => platform = info.platform)
@@ -336,6 +386,8 @@ EventsOn('onFileSaved', onFileSaved);
 EventsOn('onRequestSaveAs', () => SaveAs(textArea.value));
 EventsOn('onRequestSave', () => Save(textArea.value));
 
+updateTheme();
+
 // There's overlap between these listeners but it's the only way I've found
 // to update on input, backspace, and selection changes.
 textArea.addEventListener('input', onInput);
@@ -344,3 +396,5 @@ document.addEventListener('selectionchange', onSelectionChanged);
 // Set up the menu and key interactions
 menuItems.forEach(initMenuItem);
 document.addEventListener('keydown', onKey);
+
+modals.forEach(initModal);
