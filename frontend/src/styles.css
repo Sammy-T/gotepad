@@ -61,3 +61,7 @@ body > footer {
 body > footer * {
     min-width: 5rem;
 }
+
+dialog > article {
+    min-width: 35vw;
+}
