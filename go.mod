@@ -1,4 +1,4 @@
-module changeme
+module sammy-t/gotepad
 
 go 1.18
 
