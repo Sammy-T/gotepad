@@ -28,6 +28,5 @@ self.MonacoEnvironment = {
 };
 
 export const editor = monaco.editor.create(document.querySelector('#text-input'), {
-    value: `function helloWorld() {\n\tconsole.log('hello world');\n}`,
-    language: 'javascript'
+    lineNumbers: 'off'
 });
