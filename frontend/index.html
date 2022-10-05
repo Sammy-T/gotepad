@@ -73,13 +73,26 @@
 
         <dialog id="modal-options">
             <article>
-                <h3>Theme</h3>
+                <h3>Options</h3>
 
-                <select name="theme-select">
-                    <option value="auto">Auto</option>
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                </select>
+                <form>
+                    <label for="theme-select">Theme</label>
+                    <select id="theme-select" name="theme-select">
+                        <option value="auto">System Default</option>
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                    </select>
+
+                    <label for="word-wrap">
+                        <input type="checkbox" id="word-wrap" name="word-wrap" role="switch">
+                        Word Wrap
+                    </label>
+
+                    <label for="line-numbers">
+                        <input type="checkbox" id="line-numbers" name="line-numbers" role="switch">
+                        Line Numbers
+                    </label>
+                </form>
                 
                 <footer>
                     <a href="#cancel" role="button" class="secondary">Cancel</a>

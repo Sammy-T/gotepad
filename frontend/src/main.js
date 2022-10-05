@@ -287,33 +287,91 @@ function checkHeaderContent(elementId) {
     return headerChild?.id === elementId;
 }
 
+/**
+ * Displays the 'options' modal and updates its form with the current option values.
+ */
 function showOptions() {
     modalOptions.setAttribute('open', '');
 
-    const themeSelect = modalOptions.querySelector('[name="theme-select"]');
-    themeSelect.value = localStorage.getItem('gotepad.theme') || 'auto';
-
+    // A helper to respond to modal actions
     function handleAction(action) {
         if(new URL(action.href).hash === '#confirm') {
-            if(themeSelect.value === 'auto') {
-                localStorage.removeItem('gotepad.theme');
-            } else {
-                localStorage.setItem('gotepad.theme', themeSelect.value);
-            }
-
-            updateTheme();
+            saveOptions(modalOptions.querySelector('form'));
+            readOptions();
         }
 
         modalOptions.removeAttribute('open');
     }
 
+    // Update the form to match the current option values
+    const themeSelect = modalOptions.querySelector('#theme-select');
+    themeSelect.value = localStorage.getItem('gotepad.theme') || 'auto';
+
+    const lineNumSwitch = modalOptions.querySelector('#line-numbers');
+    lineNumSwitch.checked = localStorage.getItem('gotepad.lineNumbers') === 'on';
+
+    const wordWrapSwitch = modalOptions.querySelector('#word-wrap');
+    wordWrapSwitch.checked = localStorage.getItem('gotepad.wordWrap') === 'on';
+
+    // Respond to the modal actions
     const actions = modalOptions.querySelectorAll('footer a');
     actions.forEach(action => {
-        action.onclick = () => handleAction(action)
+        action.onclick = () => handleAction(action);
     });
 }
 
+/**
+ * Saves the options to local storage.
+ * @param {Element} optionsForm - The options form element
+ */
+function saveOptions(optionsForm) {
+    const optionsData = new FormData(optionsForm);
+
+    const theme = optionsData.get('theme-select');
+    const lineNumbers = optionsData.get('line-numbers') || 'off';
+    const wordWrap = optionsData.get('word-wrap') || 'off';
+
+    if(theme === 'auto') {
+        localStorage.removeItem('gotepad.theme');
+    } else {
+        localStorage.setItem('gotepad.theme', theme);
+    }
+
+    localStorage.setItem('gotepad.lineNumbers', lineNumbers);
+    localStorage.setItem('gotepad.wordWrap', wordWrap);
+}
+
+/**
+ * Reads the options from local storage and updates the ui.
+ */
+function readOptions() {
+    const html = document.querySelector('html');
+
+    const theme = localStorage.getItem('gotepad.theme');
+    const lineNumbers = localStorage.getItem('gotepad.lineNumbers') || 'off';
+    const wordWrap = localStorage.getItem('gotepad.wordWrap') || 'off';
+
+    const editorOptions = {
+        theme: (theme === 'light') ? 'vs' : 'vs-dark',
+        lineNumbers: lineNumbers,
+        wordWrap: wordWrap
+    };
+    
+    if(!theme) {
+        // Match the system theme if the option isn't set
+        const prefersSystemDark = window.matchMedia('(prefers-color-scheme: dark').matches
+        editorOptions.theme = (prefersSystemDark) ? 'vs-dark' : 'vs';
+
+        html.removeAttribute('data-theme');
+    } else {
+        html.setAttribute('data-theme', theme);
+    }
+
+    editor.updateOptions(editorOptions);
+}
+
 function initModal(modal) {
+    // Close the modal when the background is clicked
     modal.addEventListener('click', event => {
         if(event.target.tagName === 'DIALOG') modal.removeAttribute('open');
     });
@@ -362,23 +420,6 @@ function initMenuItem(item) {
     item.addEventListener('click', () => onMenuItemClick(item));
 }
 
-function updateTheme() {
-    const html = document.querySelector('html');
-    const theme = localStorage.getItem('gotepad.theme');
-    
-    if(!theme) {
-        html.removeAttribute('data-theme');
-
-        const prefersSystemDark = window.matchMedia('(prefers-color-scheme: dark').matches
-        const autoTheme = (prefersSystemDark) ? 'vs-dark' : 'vs';
-        editor.updateOptions({ theme: autoTheme });
-        return;
-    }
-
-    editor.updateOptions({ theme: (theme === 'light') ? 'vs' : 'vs-dark' });
-    html.setAttribute('data-theme', theme);
-}
-
 // Retrieve the platform from the environment
 Environment()
     .then(info => platform = info.platform)
@@ -392,7 +433,7 @@ EventsOn('onFileSaved', onFileSaved);
 EventsOn('onRequestSaveAs', () => SaveAs(textArea.value));
 EventsOn('onRequestSave', () => Save(textArea.value));
 
-updateTheme();
+readOptions();
 
 // There's overlap between these listeners but it's the only way I've found
 // to update on input, backspace, and selection changes.

@@ -28,5 +28,6 @@ self.MonacoEnvironment = {
 };
 
 export const editor = monaco.editor.create(document.querySelector('#text-input'), {
-    lineNumbers: 'off'
+    lineNumbers: 'off',
+    language: 'text'
 });
