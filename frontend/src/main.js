@@ -1,5 +1,5 @@
 import {editor} from './editor/init';
-import {Environment, EventsOn} from '../wailsjs/runtime/runtime';
+import {Environment, EventsOn, WindowSetDarkTheme} from '../wailsjs/runtime/runtime';
 import {NewFile, OpenFile, SaveAs, Save} from '../wailsjs/go/main/App';
 
 let platform;
@@ -236,8 +236,8 @@ function toggleFind() {
     // Create the form from the template
     const findForm = templateFind.content.firstElementChild.cloneNode(true);
 
-    findForm.addEventListener('focusin', onHeaderFocusIn);
-    findForm.addEventListener('focusout', onHeaderFocusOut);
+    // findForm.addEventListener('focusin', onHeaderFocusIn);
+    // findForm.addEventListener('focusout', onHeaderFocusOut);
     findForm.addEventListener('submit', onFind);
 
     header.appendChild(findForm); // Add the form to the header
@@ -394,6 +394,16 @@ function initMenuItem(item) {
     item.addEventListener('click', () => onMenuItemClick(item));
 }
 
+const resizeObserver = new ResizeObserver(entries => {
+    for(const entry of entries) {
+        if(entry.contentRect) {
+            const {width, height} = entry.contentRect;
+
+            editor.layout({height, width}); // Update the size of the editor
+        }
+    }
+});
+
 // Retrieve the platform from the environment
 Environment()
     .then(info => platform = info.platform)
@@ -408,6 +418,9 @@ EventsOn('onRequestSaveAs', () => SaveAs(editor.getValue()));
 EventsOn('onRequestSave', () => Save(editor.getValue()));
 
 readOptions();
+
+// Listen for resizes on the editor's parent container
+resizeObserver.observe(document.querySelector('.container'));
 
 // Listen for editor content and cursor changes
 editor.onDidChangeModelContent(() => saveStatus.innerText = 'unsaved');

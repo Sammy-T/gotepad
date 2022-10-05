@@ -47,6 +47,7 @@ body > main {
     flex-grow: 1;
     padding-top: 2rem;
     padding-bottom: 2rem;
+    overflow: hidden;
 }
 
 #text-input {
