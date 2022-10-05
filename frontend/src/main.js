@@ -10,7 +10,7 @@ const menuDropdowns = document.querySelectorAll('#menu details');
 const menuItems = document.querySelectorAll('#menu a');
 const modals = document.querySelectorAll('dialog');
 const header = document.querySelector('body > header');
-const textArea = document.querySelector('#text-input');
+const textArea = document.querySelector('#text-input'); //// TODO: Remove
 const saveStatus = document.querySelector('#save-status');
 const lineCount = document.querySelector('#line-count');
 
@@ -23,7 +23,7 @@ const modalOptions = document.querySelector('#modal-options');
  * Responds to the custom 'onNewFile' Wails event and clears the text area.
  */
 function onNewFile() {
-    textArea.value = '';
+    editor.setValue('');
     saveStatus.innerText = 'unsaved';
 }
 
@@ -34,7 +34,7 @@ function onNewFile() {
  * @param {String} fileText 
  */
 function onFileRead(fileText) {
-    textArea.value = fileText;
+    editor.setValue(fileText);
     saveStatus.innerText = 'saved';
 }
 
@@ -103,9 +103,9 @@ function onKey(event) {
             break;
         case 's':
             if(event.shiftKey) {
-                SaveAs(textArea.value);
+                SaveAs(editor.getValue());
             } else {
-                Save(textArea.value);
+                Save(editor.getValue());
             }
             break;
         case 'f':
@@ -390,10 +390,10 @@ function onMenuItemClick(item) {
             OpenFile();
             break;
         case 'save-file':
-            Save(textArea.value);
+            Save(editor.getValue());
             break;
         case 'save-file-as':
-            SaveAs(textArea.value);
+            SaveAs(editor.getValue());
             break;
         case 'find-term':
             toggleFind();
@@ -430,8 +430,8 @@ EventsOn('onNewFile', onNewFile);
 EventsOn('onFileRead', onFileRead);
 EventsOn('onFileSaved', onFileSaved);
 
-EventsOn('onRequestSaveAs', () => SaveAs(textArea.value));
-EventsOn('onRequestSave', () => Save(textArea.value));
+EventsOn('onRequestSaveAs', () => SaveAs(editor.getValue()));
+EventsOn('onRequestSave', () => Save(editor.getValue()));
 
 readOptions();
 
