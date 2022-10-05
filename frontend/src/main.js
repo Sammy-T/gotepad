@@ -1,3 +1,4 @@
+import {editor} from './editor/init';
 import {Environment, EventsOn} from '../wailsjs/runtime/runtime';
 import {NewFile, OpenFile, SaveAs, Save} from '../wailsjs/go/main/App';
 
@@ -367,9 +368,14 @@ function updateTheme() {
     
     if(!theme) {
         html.removeAttribute('data-theme');
+
+        const prefersSystemDark = window.matchMedia('(prefers-color-scheme: dark').matches
+        const autoTheme = (prefersSystemDark) ? 'vs-dark' : 'vs';
+        editor.updateOptions({ theme: autoTheme });
         return;
     }
 
+    editor.updateOptions({ theme: (theme === 'light') ? 'vs' : 'vs-dark' });
     html.setAttribute('data-theme', theme);
 }
 

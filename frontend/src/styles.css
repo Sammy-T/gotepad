@@ -49,9 +49,8 @@ body > main {
     padding-bottom: 2rem;
 }
 
-main textarea {
+#text-input {
     height: 100%;
-    resize: none;
 }
 
 body > footer {
