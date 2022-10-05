@@ -52,37 +52,11 @@ function onFileSaved(response) {
  * @param {Event} event - The triggering event.
  */
 function onSelectionChanged(event) {
-    const targetId = event.target.activeElement?.id || event.target.id;
-
-    // Only respond to changes from the text area
-    if(targetId !== 'text-input') return;
-
-    // Get the text leading up to the selection
-    const upToCursor = textArea.value.substring(0, textArea.selectionStart);
-
-    // If we're past the first line, start after the last newline.
-    // if we're on the first line, start at the beginning.
-    let lineStart = upToCursor.lastIndexOf('\n');
-    lineStart = (lineStart > -1) ? lineStart + 1 : 0;
-
-    const currentLine = upToCursor.substring(lineStart);
-
-    const line = (upToCursor.match(/\n/g) || []).length + 1;
-    const col = currentLine.length + 1;
-
-    const totalLines = (textArea.value.match(/\n/g) || []).length + 1;
-
+    const {lineNumber, column} = event.position;
+    const totalLines = (editor.getValue().match(/\n/g) || []).length + 1;
     const ending = totalLines > 1 ? 'lines' : 'line';
-    lineCount.innerText = `line ${line}, col ${col} - ${totalLines} ${ending}`;
-}
 
-/**
- * Responds to input value changes. Updates the save status and line count.
- * @param {Event} event - The triggering event. 
- */
-function onInput(event) {
-    saveStatus.innerText = 'unsaved';
-    onSelectionChanged(event);
+    lineCount.innerText = `line ${lineNumber}, col ${column} - ${totalLines} ${ending}`;
 }
 
 /**
@@ -435,10 +409,9 @@ EventsOn('onRequestSave', () => Save(editor.getValue()));
 
 readOptions();
 
-// There's overlap between these listeners but it's the only way I've found
-// to update on input, backspace, and selection changes.
-textArea.addEventListener('input', onInput);
-document.addEventListener('selectionchange', onSelectionChanged);
+// Listen for editor content and cursor changes
+editor.onDidChangeModelContent(() => saveStatus.innerText = 'unsaved');
+editor.onDidChangeCursorPosition(onSelectionChanged);
 
 // Set up the menu and key interactions
 menuItems.forEach(initMenuItem);
