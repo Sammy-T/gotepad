@@ -12,6 +12,8 @@ type Language struct {
 	Mimetypes  []string
 }
 
+// ParseLanguages parses the provided json array string
+// into a collection of 'Language' structs
 func ParseLanguages(jsonStr string) []Language {
 	var languages []Language
 
