@@ -25,8 +25,8 @@ body {
 
 body > main {
     flex-grow: 1;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+    padding: 1rem;
+    border-radius: 3.8rem;
     overflow: hidden;
 }
 

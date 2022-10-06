@@ -327,7 +327,7 @@ readPrefs();
 initLanguages();
 
 // Listen for resizes on the editor's parent container
-resizeObserver.observe(document.querySelector('.container'));
+resizeObserver.observe(document.querySelector('body > main'));
 
 // Listen for editor content and cursor changes
 editor.onDidChangeModelContent(() => saveStatus.innerText = 'unsaved');
