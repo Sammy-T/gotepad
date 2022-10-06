@@ -1,5 +1,5 @@
-import {editor} from './editor/init';
-import {Environment, EventsOn} from '../wailsjs/runtime/runtime';
+import {editor, supportedLangs} from './editor/init';
+import {Environment, EventsEmit, EventsOn} from '../wailsjs/runtime/runtime';
 import {NewFile, OpenFile, SaveAs, Save} from '../wailsjs/go/main/App';
 
 let platform;
@@ -246,6 +246,11 @@ function initMenuItem(item) {
     item.addEventListener('click', () => onMenuItemClick(item));
 }
 
+function initLanguages() {
+    EventsEmit('onLanguagesLoaded', JSON.stringify(supportedLangs));
+    //// TODO: Populate languages modal menu
+}
+
 const resizeObserver = new ResizeObserver(entries => {
     for(const entry of entries) {
         if(entry.contentRect) {
@@ -270,6 +275,7 @@ EventsOn('onRequestSaveAs', () => SaveAs(editor.getValue()));
 EventsOn('onRequestSave', () => Save(editor.getValue()));
 
 readOptions();
+initLanguages();
 
 // Listen for resizes on the editor's parent container
 resizeObserver.observe(document.querySelector('.container'));
@@ -283,5 +289,3 @@ menuItems.forEach(initMenuItem);
 document.addEventListener('keydown', onKey);
 
 modals.forEach(initModal);
-
-// console.log(editor.getSupportedActions());

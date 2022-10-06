@@ -31,3 +31,9 @@ export const editor = monaco.editor.create(document.querySelector('#text-input')
     lineNumbers: 'off',
     language: 'text'
 });
+
+export const supportedLangs = monaco.languages.getLanguages()
+    .filter(lang => lang.aliases?.length > 0 && lang.extensions?.length > 0);
+
+// console.log(editor.getSupportedActions());
+// console.log(monaco.languages.getLanguages());

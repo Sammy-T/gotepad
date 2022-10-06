@@ -2,22 +2,20 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-var fileFilters = []runtime.FileFilter{
-	{DisplayName: "Text files", Pattern: "*.txt"},
-	{DisplayName: "All files (*.*)", Pattern: "*.*"},
-}
-
 // App struct
 type App struct {
-	ctx      context.Context
-	filePath string
+	ctx         context.Context
+	filePath    string
+	fileFilters []runtime.FileFilter
 }
 
 type ActionResponse struct {
@@ -34,6 +32,39 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
+
+	runtime.EventsOn(a.ctx, "onLanguagesLoaded", a.onLanguagesLoaded)
+}
+
+// onLanguagesLoaded builds the file filters used in the file dialogs
+func (a *App) onLanguagesLoaded(optionalData ...interface{}) {
+	a.fileFilters = []runtime.FileFilter{
+		{DisplayName: "All files", Pattern: "*.*"},
+	}
+
+	// Return early if the arguments are empty
+	if len(optionalData) == 0 {
+		return
+	}
+
+	// Assert the data to a string
+	jsonStr, ok := optionalData[0].(string)
+	if !ok {
+		fmt.Println("Error: Languages value cannot be asserted to string.")
+		return
+	}
+
+	languages := ParseLanguages(jsonStr)
+
+	// Add the languages to the file filters
+	for _, language := range languages {
+		fileFilter := runtime.FileFilter{
+			DisplayName: language.Aliases[0],
+			Pattern:     "*" + strings.Join(language.Extensions, ";*"),
+		}
+
+		a.fileFilters = append(a.fileFilters, fileFilter)
+	}
 }
 
 // NewFile clears the file path, sets the window title, and emits an 'onNewFile' event
@@ -46,7 +77,7 @@ func (a *App) NewFile() {
 // OpenFile opens a file dialog and reads the selected file
 func (a *App) OpenFile() {
 	options := runtime.OpenDialogOptions{
-		Filters: fileFilters,
+		Filters: a.fileFilters,
 	}
 
 	// Open the dialog
@@ -76,7 +107,7 @@ func (a *App) OpenFile() {
 func (a *App) SaveAs(contents string) {
 	options := runtime.SaveDialogOptions{
 		DefaultFilename: "*.txt",
-		Filters:         fileFilters,
+		Filters:         a.fileFilters,
 	}
 
 	// Open the dialog
