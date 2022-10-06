@@ -29,7 +29,7 @@ self.MonacoEnvironment = {
 
 export const editor = monaco.editor.create(document.querySelector('#text-input'), {
     lineNumbers: 'off',
-    language: 'text'
+    language: 'plaintext'
 });
 
 export const supportedLangs = monaco.languages.getLanguages()

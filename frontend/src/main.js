@@ -1,8 +1,10 @@
+import * as monaco from 'monaco-editor';
 import {editor, supportedLangs} from './editor/init';
 import {Environment, EventsEmit, EventsOn} from '../wailsjs/runtime/runtime';
 import {NewFile, OpenFile, SaveAs, Save} from '../wailsjs/go/main/App';
 
 let platform;
+let currentLang = 'plaintext';
 
 const menuDropdowns = document.querySelectorAll('#menu details');
 const menuItems = document.querySelectorAll('#menu a');
@@ -10,7 +12,8 @@ const modals = document.querySelectorAll('dialog');
 const saveStatus = document.querySelector('#save-status');
 const lineCount = document.querySelector('#line-count');
 
-const modalOptions = document.querySelector('#modal-options');
+const modalPrefs = document.querySelector('#modal-prefs');
+const modalLang = document.querySelector('#modal-language');
 
 /**
  * Responds to the custom 'onNewFile' Wails event and clears the text area.
@@ -111,33 +114,33 @@ function triggerCmdPalette() {
 }
 
 /**
- * Displays the 'options' modal and updates its form with the current option values.
+ * Displays the 'preferences' modal and updates its form with the current option values.
  */
-function showOptions() {
-    modalOptions.setAttribute('open', '');
+function showPrefs() {
+    modalPrefs.setAttribute('open', '');
 
     // A helper to respond to modal actions
     function handleAction(action) {
         if(new URL(action.href).hash === '#confirm') {
-            saveOptions(modalOptions.querySelector('form'));
-            readOptions();
+            savePrefs(modalPrefs.querySelector('form'));
+            readPrefs();
         }
 
-        modalOptions.removeAttribute('open');
+        modalPrefs.removeAttribute('open');
     }
 
     // Update the form to match the current option values
-    const themeSelect = modalOptions.querySelector('#theme-select');
+    const themeSelect = modalPrefs.querySelector('#theme-select');
     themeSelect.value = localStorage.getItem('gotepad.theme') || 'auto';
 
-    const lineNumSwitch = modalOptions.querySelector('#line-numbers');
+    const lineNumSwitch = modalPrefs.querySelector('#line-numbers');
     lineNumSwitch.checked = localStorage.getItem('gotepad.lineNumbers') === 'on';
 
-    const wordWrapSwitch = modalOptions.querySelector('#word-wrap');
+    const wordWrapSwitch = modalPrefs.querySelector('#word-wrap');
     wordWrapSwitch.checked = localStorage.getItem('gotepad.wordWrap') === 'on';
 
     // Respond to the modal actions
-    const actions = modalOptions.querySelectorAll('footer a');
+    const actions = modalPrefs.querySelectorAll('footer a');
     actions.forEach(action => {
         action.onclick = () => handleAction(action);
     });
@@ -147,7 +150,7 @@ function showOptions() {
  * Saves the options to local storage.
  * @param {Element} optionsForm - The options form element
  */
-function saveOptions(optionsForm) {
+function savePrefs(optionsForm) {
     const optionsData = new FormData(optionsForm);
 
     const theme = optionsData.get('theme-select');
@@ -167,7 +170,7 @@ function saveOptions(optionsForm) {
 /**
  * Reads the options from local storage and updates the ui.
  */
-function readOptions() {
+function readPrefs() {
     const html = document.querySelector('html');
 
     const theme = localStorage.getItem('gotepad.theme');
@@ -191,6 +194,33 @@ function readOptions() {
     }
 
     editor.updateOptions(editorOptions);
+}
+
+/**
+ * Displays the 'language' modal and updates its form with the current option values.
+ */
+function showLangOpts() {
+    modalLang.setAttribute('open', '');
+
+    const langSelect = modalLang.querySelector('#language-select');
+
+    // A helper to respond to modal actions
+    function handleAction(action) {
+        if(new URL(action.href).hash === '#confirm') {
+            setLanguage(langSelect.value);
+        }
+
+        modalLang.removeAttribute('open');
+    }
+
+    // Update the form to match the current option values
+    langSelect.value = currentLang;
+
+    // Respond to the modal actions
+    const actions = modalLang.querySelectorAll('footer a');
+    actions.forEach(action => {
+        action.onclick = () => handleAction(action);
+    });
 }
 
 function initModal(modal) {
@@ -227,8 +257,11 @@ function onMenuItemClick(item) {
         case 'cmd-palette':
             triggerCmdPalette();
             break;
-        case 'options':
-            showOptions();
+        case 'prefs':
+            showPrefs();
+            break;
+        case 'language':
+            showLangOpts();
             break;
     }
 
@@ -246,9 +279,25 @@ function initMenuItem(item) {
     item.addEventListener('click', () => onMenuItemClick(item));
 }
 
+function setLanguage(lang) {
+    currentLang = lang;
+    monaco.editor.setModelLanguage(editor.getModel(), lang);
+}
+
 function initLanguages() {
+    // Emit an event with the supported languages to notify the backend
     EventsEmit('onLanguagesLoaded', JSON.stringify(supportedLangs));
-    //// TODO: Populate languages modal menu
+
+    const langSelect = document.querySelector('#language-select');
+
+    // Populate languages modal menu
+    supportedLangs.forEach(language => {
+        const langOpt = document.createElement('option');
+        langOpt.value = language.id;
+        langOpt.text = language.aliases[0];
+
+        langSelect.add(langOpt, null);
+    });
 }
 
 const resizeObserver = new ResizeObserver(entries => {
@@ -274,7 +323,7 @@ EventsOn('onFileSaved', onFileSaved);
 EventsOn('onRequestSaveAs', () => SaveAs(editor.getValue()));
 EventsOn('onRequestSave', () => Save(editor.getValue()));
 
-readOptions();
+readPrefs();
 initLanguages();
 
 // Listen for resizes on the editor's parent container
