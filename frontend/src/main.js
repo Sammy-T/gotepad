@@ -58,8 +58,9 @@ function onSelectionChanged(event) {
  */
 function onKey(event) {
     const cmdOrCtrl = (platform === 'darwin') ? 'metaKey' : 'ctrlKey';
+    const isFuncKey = /F\d+/i.test(event.key);
 
-    if(!event[cmdOrCtrl]) return; // Ignore non-accelerator inputs
+    if(!event[cmdOrCtrl] && !isFuncKey) return; // Ignore non-accelerator inputs
 
     switch(event.key) {
         case 'n':
@@ -81,14 +82,10 @@ function onKey(event) {
         case 'h':
             triggerReplace();
             break;
+        case 'F1':
+            triggerCmdPalette();
+            break;
     }
-}
-
-/**
- * Triggers monaco editor's 'replace' action.
- */
-function triggerReplace() {
-    editor.trigger(null, 'editor.action.startFindReplaceAction');
 }
 
 /**
@@ -96,6 +93,21 @@ function triggerReplace() {
  */
 function triggerFind() {
     editor.trigger(null, 'actions.find');
+}
+
+/**
+ * Triggers monaco editor's 'replace' action.
+ */
+ function triggerReplace() {
+    editor.trigger(null, 'editor.action.startFindReplaceAction');
+}
+
+/**
+ * Triggers monaco editor's 'command palette' action.
+ */
+function triggerCmdPalette() {
+    editor.focus(); // Command palette can only be triggered when the editor has focus
+    editor.trigger(null, 'editor.action.quickCommand');
 }
 
 /**
@@ -211,6 +223,9 @@ function onMenuItemClick(item) {
             break;
         case 'replace-term':
             triggerReplace();
+            break;
+        case 'cmd-palette':
+            triggerCmdPalette();
             break;
         case 'options':
             showOptions();
