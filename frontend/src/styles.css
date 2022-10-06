@@ -23,26 +23,6 @@ body {
     justify-content: space-between;
 }
 
-body > header {
-    padding: 0 1rem;
-}
-
-header form, header fieldset {
-    margin: 0;
-}
-
-.search-field {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.search-field input, .search-field, button {
-    width: auto;
-    margin: 0;
-}
-
 body > main {
     flex-grow: 1;
     padding-top: 2rem;
