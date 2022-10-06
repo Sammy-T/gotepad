@@ -39,7 +39,16 @@
                     </details>
                 </li>
 
-                <li><a href="#" id="options"><small>Options</small></a></li>
+                <li>
+                    <details role="list">
+                        <summary aria-haspopup="listbox" role="link"><small>Options</small></summary>
+
+                        <ul role="listbox">
+                            <li><a id="prefs"><small>Preferences</small></a></li>
+                            <li><a id="language"><small>Language</small></a></li>
+                        </ul>
+                    </details>
+                </li>
             </ul>
         </nav>
 
@@ -47,9 +56,10 @@
             <div id="text-input"></div>
         </main>
 
-        <dialog id="modal-options">
+        <!-- Modals -->
+        <dialog id="modal-prefs">
             <article>
-                <h3>Options</h3>
+                <h3>Preferences</h3>
 
                 <form>
                     <label for="theme-select">Theme</label>
@@ -70,6 +80,20 @@
                     </label>
                 </form>
                 
+                <footer>
+                    <a href="#cancel" role="button" class="secondary">Cancel</a>
+                    <a href="#confirm" role="button">Confirm</a>
+                </footer>
+            </article>
+        </dialog>
+
+        <dialog id="modal-language">
+            <article>
+                <form>
+                    <label for="language-select">Language</label>
+                    <select id="language-select" name="language-select"></select>
+                </form>
+
                 <footer>
                     <a href="#cancel" role="button" class="secondary">Cancel</a>
                     <a href="#confirm" role="button">Confirm</a>
