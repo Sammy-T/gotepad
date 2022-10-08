@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 )
 
 type Language struct {
@@ -19,7 +19,7 @@ func ParseLanguages(jsonStr string) []Language {
 
 	err := json.Unmarshal([]byte(jsonStr), &languages)
 	if err != nil {
-		fmt.Println("Error parsing languages:", err)
+		log.Println("Error parsing languages:", err)
 		return nil
 	}
 

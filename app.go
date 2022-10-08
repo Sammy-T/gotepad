@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -50,7 +49,7 @@ func (a *App) onLanguagesLoaded(optionalData ...interface{}) {
 	// Assert the data to a string
 	jsonStr, ok := optionalData[0].(string)
 	if !ok {
-		fmt.Println("Error: Languages value cannot be asserted to string.")
+		log.Println("Error: Languages value cannot be asserted to string.")
 		return
 	}
 
