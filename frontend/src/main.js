@@ -1,4 +1,5 @@
 import {editor, supportedLangs, setEditorLang} from './ext/editor';
+import './ext/terminal';
 import {Environment, EventsEmit, EventsOn} from '../wailsjs/runtime/runtime';
 import {NewFile, OpenFile, SaveAs, Save} from '../wailsjs/go/main/App';
 
