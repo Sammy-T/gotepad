@@ -14,7 +14,7 @@
     <body>
         <nav id="menu">
             <ul>
-                <li>
+                <li> <!-- File -->
                     <details role="list">
                         <summary aria-haspopup="listbox" role="link"><small>File</small></summary>
 
@@ -27,7 +27,7 @@
                     </details>
                 </li>
 
-                <li>
+                <li> <!-- Edit -->
                     <details role="list">
                         <summary aria-haspopup="listbox" role="link"><small>Edit</small></summary>
 
@@ -39,7 +39,17 @@
                     </details>
                 </li>
 
-                <li>
+                <li> <!-- Terminal -->
+                    <details role="list">
+                        <summary aria-haspopup="listbox" role="link"><small>Terminal</small></summary>
+
+                        <ul id="terminal-menu" role="listbox">
+                            <li><small>Unsupported</small></li>
+                        </ul>
+                    </details>
+                </li>
+
+                <li> <!-- Options -->
                     <details role="list">
                         <summary aria-haspopup="listbox" role="link"><small>Options</small></summary>
 
@@ -55,6 +65,11 @@
         <main>
             <div id="text-input"></div>
         </main>
+
+        <!-- Templates -->
+        <template id="template-terminal">
+            <li><a><small>Terminal Name</small></a></li>
+        </template>
 
         <!-- Modals -->
         <dialog id="modal-prefs">
