@@ -1,16 +1,26 @@
 import {EventsOn} from '../../wailsjs/runtime';
+import {OpenTerminal} from '../../wailsjs/go/main/TerminalAction';
 
 const terminalMenu = document.querySelector('#terminal-menu');
 const menuDropdown = document.querySelector('#terminal-dropdown');
 
 const templateTerminal = document.querySelector('#template-terminal');
 
+/**
+ * Opens the terminal and closes the menu dropdown.
+ * @param {String} name - The terminal name
+ */
 function onTerminalClick(name) {
+    OpenTerminal(name);
     menuDropdown.removeAttribute('open');
 }
 
+/**
+ * Populates the terminal menu with the mapped terminals.
+ * @param {Object} terminals 
+ */
 function onTerminalsMapped(terminals) {
-    if(Object.keys(terminals).length == 0) return;
+    if(Object.keys(terminals).length === 0) return;
 
     terminalMenu.innerHTML = ''; // Clear the menu contents
 

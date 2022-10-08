@@ -29,20 +29,20 @@ func NewTerminalAction() *TerminalAction {
 
 func (ta *TerminalAction) startup(ctx context.Context) {
 	ta.ctx = ctx
-	// ta.openTerminal("Command Prompt")
-	log.Println(ta.terminals) //// TODO: TEMP
 }
 
 func (ta *TerminalAction) onDomReady(ctx context.Context) {
 	runtime.EventsEmit(ta.ctx, "onTerminalsMapped", ta.terminals)
 }
 
-// // TODO: Bind to frontend
+// OpenTerminal opens the terminal specified by the supplied name
 func (ta *TerminalAction) OpenTerminal(name string) {
 	terminal := ta.terminals[name]
 
+	// Create the command
 	cmd := exec.Command(terminal.CmdRoot, terminal.OpenCmd...)
 
+	// Run the command
 	if err := cmd.Run(); err != nil {
 		log.Fatal(err)
 	}
