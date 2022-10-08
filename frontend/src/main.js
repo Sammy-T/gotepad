@@ -1,5 +1,4 @@
-import * as monaco from 'monaco-editor';
-import {editor, supportedLangs} from './editor/init';
+import {editor, supportedLangs, setEditorLang} from './ext/editor';
 import {Environment, EventsEmit, EventsOn} from '../wailsjs/runtime/runtime';
 import {NewFile, OpenFile, SaveAs, Save} from '../wailsjs/go/main/App';
 
@@ -281,7 +280,7 @@ function initMenuItem(item) {
 
 function setLanguage(lang) {
     currentLang = lang;
-    monaco.editor.setModelLanguage(editor.getModel(), lang);
+    setEditorLang(lang);
 }
 
 function initLanguages() {
