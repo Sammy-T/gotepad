@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"embed"
+	"os"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -37,4 +38,14 @@ func main() {
 	if err != nil {
 		println("Error:", err.Error())
 	}
+}
+
+// fileExists determines whether the file at the given path exists
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+
+	// Use whether we received a 'not exist' exist error
+	// to determine if the file exists.
+	// (Why doesn't Go have a better way to do this?)
+	return !os.IsNotExist(err)
 }
