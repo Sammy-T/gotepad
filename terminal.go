@@ -62,9 +62,9 @@ func getTerminals() map[string]Terminal {
 		// Set Git Bash terminal if the file is found
 		if bashPath := "C:/Program Files/Git/bin/bash.exe"; fileExists(bashPath) {
 			bash := Terminal{
-				"Git Bash",
-				cmdRoot,
-				[]string{"/C", "start", "", bashPath},
+				Name:    "Git Bash",
+				CmdRoot: cmdRoot,
+				OpenCmd: []string{"/C", "start", "", bashPath},
 			}
 
 			terminals[bash.Name] = bash
@@ -72,9 +72,9 @@ func getTerminals() map[string]Terminal {
 	case "linux":
 		if qTerminalPath := "/usr/bin/qterminal"; fileExists(qTerminalPath) {
 			qTerminal := Terminal{
-				"qTerminal",
-				"qterminal",
-				[]string{"qterminal"},
+				Name:    "qTerminal",
+				CmdRoot: "qterminal",
+				OpenCmd: []string{"qterminal"},
 			}
 
 			terminals["qTerminal"] = qTerminal
