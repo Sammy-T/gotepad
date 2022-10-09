@@ -69,6 +69,16 @@ func getTerminals() map[string]Terminal {
 
 			terminals[bash.Name] = bash
 		}
+	case "linux":
+		if qTerminalPath := "/usr/bin/qterminal"; fileExists(qTerminalPath) {
+			qTerminal := Terminal{
+				"qTerminal",
+				"qterminal",
+				[]string{"qterminal"},
+			}
+
+			terminals["qTerminal"] = qTerminal
+		}
 	default:
 		log.Printf("OS %v not implemented\n", rt.GOOS)
 	}
