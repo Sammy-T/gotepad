@@ -1,0 +1,101 @@
+name: Build/Release
+
+on:
+  workflow_dispatch: # Allow manual triggering
+  push:
+    tags:
+      - 'v*.*.*' # Trigger on pushing version tags
+
+jobs:
+  # Build the app
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        include:
+          - os: macos-latest
+            os-base: darwin
+          - os: ubuntu-latest
+            os-base: linux
+          - os: windows-latest
+            os-base: windows
+    
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Linux dependencies
+      if: matrix.os == 'ubuntu-latest'
+      run: sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3.5.0
+      
+      # Pre-install & Pre-build the frontend to make sure the 
+      # necessary frontend resources are available when the Wails build starts
+    - name: Pre-install frontend
+      working-directory: frontend
+      run: npm install
+    
+    - name: Pre-build frontend
+      working-directory: frontend
+      run: npm run build
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+    
+    - name: Install Wails CLI
+      run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+      
+    - name: Check Wails requirements
+      run: wails doctor
+      
+    - name: Read output file name from wails.json
+      id: filename
+      uses: notiz-dev/github-action-json-property@release
+      with:
+        path: 'wails.json'
+        prop_path: 'outputfilename'
+        
+    - name: Create release directory
+      run: mkdir -p release
+
+    - name: Build Wails app
+      run: wails build
+      
+    - name: Zip release file
+      uses: vimtor/action-zip@v1
+      with:
+        files: build/bin
+        recursive: false
+        dest: release/${{ steps.filename.outputs.prop }}_${{ matrix.os-base }}.zip
+      
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: build
+        path: release/
+        retention-days: 7
+
+  
+  # Create a release
+  release:
+    if: startsWith(github.ref_name, 'v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v3.0.0
+      with:
+        name: build
+        path: release/
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: ${{ github.ref_name }}
+        tag_name: ${{ github.ref_name }}
+        draft: true
+        files: release/*
