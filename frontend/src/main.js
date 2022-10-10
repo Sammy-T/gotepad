@@ -1,7 +1,7 @@
 import {editor, supportedLangs, setEditorLang} from './ext/editor';
 import './ext/terminal';
 import {Environment, EventsEmit, EventsOn} from '../wailsjs/runtime/runtime';
-import {NewFile, OpenFile, SaveAs, Save} from '../wailsjs/go/main/App';
+import {NewFile, OpenFile, SaveAs, Save, UpdateDefaultName} from '../wailsjs/go/main/App';
 import {ReadConfig, OpenConfigFile} from '../wailsjs/go/main/AppConfig';
 
 let platform;
@@ -240,6 +240,10 @@ function showLangOpts() {
     function handleAction(action) {
         if(new URL(action.href).hash === '#confirm') {
             setLanguage(langSelect.value);
+
+            // Update default filename
+            const language = supportedLangs.find(lang => lang.id === langSelect.value);
+            UpdateDefaultName(`*${language.extensions[0]}`);
         }
 
         modalLang.removeAttribute('open');

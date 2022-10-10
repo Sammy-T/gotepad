@@ -17,3 +17,7 @@ export function Save(arg1) {
 export function SaveAs(arg1) {
   return window['go']['main']['App']['SaveAs'](arg1);
 }
+
+export function UpdateDefaultName(arg1) {
+  return window['go']['main']['App']['UpdateDefaultName'](arg1);
+}

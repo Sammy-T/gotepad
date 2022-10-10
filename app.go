@@ -62,6 +62,11 @@ func (a *App) onLanguagesLoaded(optionalData ...interface{}) {
 	}
 }
 
+// UpdateDefaultName sets the default file name to the provided string
+func (a *App) UpdateDefaultName(filename string) {
+	a.defaultFilename = filename
+}
+
 // NewFile clears the file path, sets the window title, and emits an 'onNewFile' event
 func (a *App) NewFile() {
 	a.filePath = ""
