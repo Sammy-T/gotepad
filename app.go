@@ -142,15 +142,3 @@ func (a *App) Save(contents string) {
 	// Emit an event to notify the save status
 	runtime.EventsEmit(a.ctx, "onFileSaved", response)
 }
-
-// RequestSaveAs is a helper to notify the frontend that the app is attempting to save.
-// This allows the frontend to respond with the necessary data.
-func (a *App) RequestSaveAs() {
-	runtime.EventsEmit(a.ctx, "onRequestSaveAs")
-}
-
-// RequestSave is a helper to notify the frontend that the app is attempting to save.
-// This allows the frontend to respond with the necessary data.
-func (a *App) RequestSave() {
-	runtime.EventsEmit(a.ctx, "onRequestSave")
-}
