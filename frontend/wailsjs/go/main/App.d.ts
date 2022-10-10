@@ -5,10 +5,8 @@ export function NewFile():Promise<void>;
 
 export function OpenFile():Promise<void>;
 
-export function RequestSave():Promise<void>;
-
-export function RequestSaveAs():Promise<void>;
-
 export function Save(arg1:string):Promise<void>;
 
 export function SaveAs(arg1:string):Promise<void>;
+
+export function UpdateDefaultName(arg1:string):Promise<void>;

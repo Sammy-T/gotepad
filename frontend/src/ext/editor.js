@@ -35,5 +35,13 @@ export const editor = monaco.editor.create(document.querySelector('#text-input')
 export const supportedLangs = monaco.languages.getLanguages()
     .filter(lang => lang.aliases?.length > 0 && lang.extensions?.length > 0);
 
+/**
+ * Updates the Monaco editor's current language.
+ * @param {string} lang - The language to update to.
+ */
+export function setEditorLang(lang) {
+    monaco.editor.setModelLanguage(editor.getModel(), lang);
+}
+
 // console.log(editor.getSupportedActions());
 // console.log(monaco.languages.getLanguages());

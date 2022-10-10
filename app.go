@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,19 +12,15 @@ import (
 
 // App struct
 type App struct {
-	ctx         context.Context
-	filePath    string
-	fileFilters []runtime.FileFilter
-}
-
-type ActionResponse struct {
-	Status  string
-	Message string
+	ctx             context.Context
+	defaultFilename string
+	filePath        string
+	fileFilters     []runtime.FileFilter
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
-	return &App{}
+	return &App{defaultFilename: "*.txt"}
 }
 
 // startup is called when the app starts. The context is saved
@@ -50,7 +45,7 @@ func (a *App) onLanguagesLoaded(optionalData ...interface{}) {
 	// Assert the data to a string
 	jsonStr, ok := optionalData[0].(string)
 	if !ok {
-		fmt.Println("Error: Languages value cannot be asserted to string.")
+		log.Println("Error: Languages value cannot be asserted to string.")
 		return
 	}
 
@@ -67,9 +62,15 @@ func (a *App) onLanguagesLoaded(optionalData ...interface{}) {
 	}
 }
 
+// UpdateDefaultName sets the default file name to the provided string
+func (a *App) UpdateDefaultName(filename string) {
+	a.defaultFilename = filename
+}
+
 // NewFile clears the file path, sets the window title, and emits an 'onNewFile' event
 func (a *App) NewFile() {
 	a.filePath = ""
+	a.defaultFilename = "*.txt"
 	runtime.WindowSetTitle(a.ctx, "gotepad")
 	runtime.EventsEmit(a.ctx, "onNewFile")
 }
@@ -79,6 +80,8 @@ func (a *App) OpenFile() {
 	options := runtime.OpenDialogOptions{
 		Filters: a.fileFilters,
 	}
+
+	response := Response{}
 
 	// Open the dialog
 	filePath, err := runtime.OpenFileDialog(a.ctx, options)
@@ -90,6 +93,7 @@ func (a *App) OpenFile() {
 	}
 
 	a.filePath = filePath
+	a.defaultFilename = "*" + filepath.Ext(filePath)
 	runtime.WindowSetTitle(a.ctx, "gotepad - "+filepath.Base(filePath))
 
 	// Read the file at the selected file path
@@ -99,14 +103,18 @@ func (a *App) OpenFile() {
 		return
 	}
 
+	response.Status = "success"
+	response.Message = filePath
+	response.Data = string(data)
+
 	// Emit an event with the read file text attached
-	runtime.EventsEmit(a.ctx, "onFileRead", string(data))
+	runtime.EventsEmit(a.ctx, "onFileRead", response)
 }
 
 // SaveAs opens a file dialog and saves the contents at the selected path
 func (a *App) SaveAs(contents string) {
 	options := runtime.SaveDialogOptions{
-		DefaultFilename: "*.txt",
+		DefaultFilename: a.defaultFilename,
 		Filters:         a.fileFilters,
 	}
 
@@ -134,7 +142,7 @@ func (a *App) Save(contents string) {
 	log.Printf("Save path: %v", a.filePath)
 	runtime.WindowSetTitle(a.ctx, "gotepad - "+filepath.Base(a.filePath))
 
-	var response ActionResponse
+	var response Response
 
 	// Save the file at the selected file path
 	err := os.WriteFile(a.filePath, []byte(contents), 0666)
@@ -147,16 +155,4 @@ func (a *App) Save(contents string) {
 
 	// Emit an event to notify the save status
 	runtime.EventsEmit(a.ctx, "onFileSaved", response)
-}
-
-// RequestSaveAs is a helper to notify the frontend that the app is attempting to save.
-// This allows the frontend to respond with the necessary data.
-func (a *App) RequestSaveAs() {
-	runtime.EventsEmit(a.ctx, "onRequestSaveAs")
-}
-
-// RequestSave is a helper to notify the frontend that the app is attempting to save.
-// This allows the frontend to respond with the necessary data.
-func (a *App) RequestSave() {
-	runtime.EventsEmit(a.ctx, "onRequestSave")
 }
