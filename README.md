@@ -1,19 +1,34 @@
-# README
+# Gotepad
+Gotepad is a basic text editor for Window, Linux, and Mac intended for quick or light text and code editing when a larger editor might be overkill. It aims to provide features and functionality somewhere between the default Microsoft Notepad app and VS Code. It's built with Wails and utilizes the Monaco editor.
+## Features
+- Syntax highlighting
+- Language/File type selection
+- Word Wrap
+- Line Numbers
+- Find/Replace
+- Opening external terminals (If supported ones are found or if their configurations are imported)
+- Light & Dark themes
 
-## About
+## Getting Started
+### Installing
+Just download and run the application file. A warning will most likely pop up as the application is not code signed.
+When running on Linux for the first time, try executing the application from the terminal. This should help troubleshoot missing dependencies.
 
-This is the official Wails Vanilla template.
+### Installing from source
+#### Requirements
+- Node.js v15+
+- Go v1.18+
+- Wails v2
+Check https://wails.io/docs/gettingstarted/installation for OS specific requirements.
+#### Run the dev server
+```
+wails dev
+```
+#### Build the application
+```
+wails build 
+```
+This will build the app binary to `/build/bin`.
 
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
-
-## Live Development
-
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite development
-server that will provide very fast hot reload of your frontend changes. If you want to develop in a browser
-and have access to your Go methods, there is also a dev server that runs on http://localhost:34115. Connect
-to this in your browser, and you can call your Go code from devtools.
-
-## Building
-
-To build a redistributable, production mode package, use `wails build`.
+## License
+This project uses the MIT license.
