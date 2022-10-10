@@ -23,6 +23,8 @@ func main() {
 	app := NewApp()
 	termAction := NewTerminalAction()
 
+	appConfig := NewAppConfig()
+
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:            "gotepad",
@@ -33,11 +35,13 @@ func main() {
 		OnStartup: func(ctx context.Context) {
 			app.startup(ctx)
 			termAction.startup(ctx)
+			appConfig.startup(ctx)
 		},
 		OnDomReady: termAction.onDomReady,
 		Bind: []interface{}{
 			app,
 			termAction,
+			appConfig,
 		},
 	})
 
