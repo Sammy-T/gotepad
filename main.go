@@ -12,6 +12,12 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+type Response struct {
+	Status  string
+	Message string
+	Data    interface{}
+}
+
 func main() {
 	// Create instance of the app structure(s)
 	app := NewApp()
@@ -40,7 +46,7 @@ func main() {
 	}
 }
 
-// fileExists determines whether the file at the given path exists
+// fileExists is a helper to determine whether the file at the given path exists
 func fileExists(path string) bool {
 	_, err := os.Stat(path)
 

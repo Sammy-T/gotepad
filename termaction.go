@@ -24,7 +24,9 @@ func (ta *TerminalAction) startup(ctx context.Context) {
 }
 
 func (ta *TerminalAction) onDomReady(ctx context.Context) {
-	runtime.EventsEmit(ta.ctx, "onTerminalsMapped", ta.terminals)
+	response := Response{"success", "terminals loaded on ready", ta.terminals}
+	runtime.EventsEmit(ta.ctx, "onTerminalsMapped", response)
+}
 }
 
 // OpenTerminal opens the terminal specified by the supplied name

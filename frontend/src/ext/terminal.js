@@ -17,9 +17,16 @@ function onTerminalClick(name) {
 
 /**
  * Populates the terminal menu with the mapped terminals.
- * @param {Object} terminals 
+ * @param {Object} response 
  */
-function onTerminalsMapped(terminals) {
+function onTerminalsMapped(response) {
+    if(response.Status !== 'success') {
+        console.error(response);
+        return;
+    }
+
+    const terminals = response.Data;
+
     if(Object.keys(terminals).length === 0) return;
 
     terminalMenu.innerHTML = ''; // Clear the menu contents

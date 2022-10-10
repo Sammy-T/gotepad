@@ -17,11 +17,6 @@ type App struct {
 	fileFilters []runtime.FileFilter
 }
 
-type ActionResponse struct {
-	Status  string
-	Message string
-}
-
 // NewApp creates a new App application struct
 func NewApp() *App {
 	return &App{}
@@ -133,7 +128,7 @@ func (a *App) Save(contents string) {
 	log.Printf("Save path: %v", a.filePath)
 	runtime.WindowSetTitle(a.ctx, "gotepad - "+filepath.Base(a.filePath))
 
-	var response ActionResponse
+	var response Response
 
 	// Save the file at the selected file path
 	err := os.WriteFile(a.filePath, []byte(contents), 0666)
