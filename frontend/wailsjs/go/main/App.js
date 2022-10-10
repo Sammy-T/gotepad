@@ -10,14 +10,6 @@ export function OpenFile() {
   return window['go']['main']['App']['OpenFile']();
 }
 
-export function RequestSave() {
-  return window['go']['main']['App']['RequestSave']();
-}
-
-export function RequestSaveAs() {
-  return window['go']['main']['App']['RequestSaveAs']();
-}
-
 export function Save(arg1) {
   return window['go']['main']['App']['Save'](arg1);
 }

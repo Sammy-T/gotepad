@@ -11,6 +11,7 @@ import (
 
 type AppConfig struct {
 	ctx          context.Context
+	ConfigPath   string
 	ExtTerminals []Terminal
 }
 
@@ -20,6 +21,23 @@ func NewAppConfig() *AppConfig {
 
 func (a *AppConfig) startup(ctx context.Context) {
 	a.ctx = ctx
+}
+
+func (a *AppConfig) OpenConfigFile() {
+	options := runtime.OpenDialogOptions{
+		Filters: []runtime.FileFilter{{DisplayName: "JSON", Pattern: "*.json"}},
+	}
+
+	// Open the dialog
+	filePath, err := runtime.OpenFileDialog(a.ctx, options)
+	if err != nil {
+		log.Printf("Error retrieving file path. %v", err)
+		return
+	} else if filePath == "" {
+		return // Return early if the user cancelled
+	}
+
+	a.ReadConfig(filePath)
 }
 
 func (a *AppConfig) ReadConfig(configPath string) {
@@ -46,6 +64,8 @@ func (a *AppConfig) ReadConfig(configPath string) {
 		runtime.EventsEmit(a.ctx, "onConfigLoaded", response)
 		return
 	}
+
+	a.ConfigPath = configPath
 
 	// Attach the config to the response
 	response.Status = "success"

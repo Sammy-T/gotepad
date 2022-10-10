@@ -2,6 +2,7 @@ import {editor, supportedLangs, setEditorLang} from './ext/editor';
 import './ext/terminal';
 import {Environment, EventsEmit, EventsOn} from '../wailsjs/runtime/runtime';
 import {NewFile, OpenFile, SaveAs, Save} from '../wailsjs/go/main/App';
+import {ReadConfig, OpenConfigFile} from '../wailsjs/go/main/AppConfig';
 
 let platform;
 let currentLang = 'plaintext';
@@ -14,6 +15,20 @@ const lineCount = document.querySelector('#line-count');
 
 const modalPrefs = document.querySelector('#modal-prefs');
 const modalLang = document.querySelector('#modal-language');
+
+/**
+ * Responds to the custom 'onConfigLoaded' Wails event and stores the config path
+ * @param {Object} response 
+ */
+function onConfigLoaded(response) {
+    if(response.Status !== 'success') {
+        console.error(response);
+        return;
+    }
+
+    const {ConfigPath} = response.Data;
+    localStorage.setItem('gotepad.configPath', ConfigPath);
+}
 
 /**
  * Responds to the custom 'onNewFile' Wails event and clears the text area.
@@ -173,6 +188,9 @@ function savePrefs(optionsForm) {
 function readPrefs() {
     const html = document.querySelector('html');
 
+    const configPath = localStorage.getItem('gotepad.configPath');
+    if(configPath) ReadConfig(configPath);
+
     const theme = localStorage.getItem('gotepad.theme');
     const lineNumbers = localStorage.getItem('gotepad.lineNumbers') || 'off';
     const wordWrap = localStorage.getItem('gotepad.wordWrap') || 'off';
@@ -263,6 +281,9 @@ function onMenuItemClick(item) {
         case 'language':
             showLangOpts();
             break;
+        case 'load-config':
+            OpenConfigFile();
+            break;
     }
 
     // Close any open menu dropdowns
@@ -316,6 +337,8 @@ Environment()
     .catch(err => console.error('Unable to get environment.', err));
 
 // Listen for Wails events
+EventsOn('onConfigLoaded', onConfigLoaded);
+
 EventsOn('onNewFile', onNewFile);
 EventsOn('onFileRead', onFileRead);
 EventsOn('onFileSaved', onFileSaved);
