@@ -1,6 +1,8 @@
 import {editor, supportedLangs, setEditorLang} from './ext/editor';
+import './ext/terminal';
 import {Environment, EventsEmit, EventsOn} from '../wailsjs/runtime/runtime';
 import {NewFile, OpenFile, SaveAs, Save} from '../wailsjs/go/main/App';
+import {ReadConfig, OpenConfigFile} from '../wailsjs/go/main/AppConfig';
 
 let platform;
 let currentLang = 'plaintext';
@@ -15,21 +17,49 @@ const modalPrefs = document.querySelector('#modal-prefs');
 const modalLang = document.querySelector('#modal-language');
 
 /**
+ * Responds to the custom 'onConfigLoaded' Wails event and stores the config path
+ * @param {Object} response 
+ */
+function onConfigLoaded(response) {
+    if(response.Status !== 'success') {
+        console.error(response);
+        return;
+    }
+
+    const {ConfigPath} = response.Data;
+    localStorage.setItem('gotepad.configPath', ConfigPath);
+}
+
+/**
  * Responds to the custom 'onNewFile' Wails event and clears the text area.
  */
 function onNewFile() {
     editor.setValue('');
     saveStatus.innerText = 'unsaved';
+
+    // Update the current language
+    setLanguage('plaintext');
 }
 
 
 /**
- * Responds to the custom 'onFileRead' Wails event and updates the text area
- * with the file text.
- * @param {String} fileText 
+ * Responds to the custom 'onFileRead' Wails event. 
+ * It updates the text area with the file text and updates the current language.
+ * @param {Object} response 
  */
-function onFileRead(fileText) {
-    editor.setValue(fileText);
+function onFileRead(response) {
+    if(response.Status !== "success") return;
+
+    // Update the current language
+    const fileExt = response.Message.match(/\.\w+/)[0];
+    const fileLanguage = supportedLangs.find(language => {
+        return language.extensions.includes(fileExt);
+    });
+    
+    setLanguage(fileLanguage.id);
+
+    // Set the editor text and save status
+    editor.setValue(response.Data);
     saveStatus.innerText = 'saved';
 }
 
@@ -172,6 +202,9 @@ function savePrefs(optionsForm) {
 function readPrefs() {
     const html = document.querySelector('html');
 
+    const configPath = localStorage.getItem('gotepad.configPath');
+    if(configPath) ReadConfig(configPath);
+
     const theme = localStorage.getItem('gotepad.theme');
     const lineNumbers = localStorage.getItem('gotepad.lineNumbers') || 'off';
     const wordWrap = localStorage.getItem('gotepad.wordWrap') || 'off';
@@ -262,6 +295,9 @@ function onMenuItemClick(item) {
         case 'language':
             showLangOpts();
             break;
+        case 'load-config':
+            OpenConfigFile();
+            break;
     }
 
     // Close any open menu dropdowns
@@ -278,9 +314,13 @@ function initMenuItem(item) {
     item.addEventListener('click', () => onMenuItemClick(item));
 }
 
-function setLanguage(lang) {
-    currentLang = lang;
-    setEditorLang(lang);
+/**
+ * Sets the current language and updates the editor's current language.
+ * @param {string} langId - The language id.
+ */
+function setLanguage(langId) {
+    currentLang = langId;
+    setEditorLang(langId);
 }
 
 function initLanguages() {
@@ -315,6 +355,8 @@ Environment()
     .catch(err => console.error('Unable to get environment.', err));
 
 // Listen for Wails events
+EventsOn('onConfigLoaded', onConfigLoaded);
+
 EventsOn('onNewFile', onNewFile);
 EventsOn('onFileRead', onFileRead);
 EventsOn('onFileSaved', onFileSaved);

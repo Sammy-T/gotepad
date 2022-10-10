@@ -28,6 +28,10 @@ body {
     display: flex;
 }
 
+#menu ul[role="listbox"] {
+    box-shadow: 10px 10px 20px rgb(0 0 0 / 10%);
+}
+
 #menu ul[role="listbox"] li a {
     min-width: 12rem;
     justify-content: space-between;
