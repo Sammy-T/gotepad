@@ -1,6 +1,16 @@
 @import '@picocss/pico';
 
 
+@media (prefers-color-scheme: light) {
+    html:not([data-theme=dark]) {
+        background-color: #dee6ed;
+    }
+}
+
+html[data-theme=light] {
+    background-color: #dee6ed;
+}
+
 html, body {
     height: 100%;
 }
