@@ -76,6 +76,8 @@ func (a *App) OpenFile() {
 		Filters: a.fileFilters,
 	}
 
+	response := Response{}
+
 	// Open the dialog
 	filePath, err := runtime.OpenFileDialog(a.ctx, options)
 	if err != nil {
@@ -96,8 +98,12 @@ func (a *App) OpenFile() {
 		return
 	}
 
+	response.Status = "success"
+	response.Message = filePath
+	response.Data = string(data)
+
 	// Emit an event with the read file text attached
-	runtime.EventsEmit(a.ctx, "onFileRead", string(data))
+	runtime.EventsEmit(a.ctx, "onFileRead", response)
 }
 
 // SaveAs opens a file dialog and saves the contents at the selected path

@@ -36,16 +36,30 @@ function onConfigLoaded(response) {
 function onNewFile() {
     editor.setValue('');
     saveStatus.innerText = 'unsaved';
+
+    // Update the current language
+    setLanguage('plaintext');
 }
 
 
 /**
- * Responds to the custom 'onFileRead' Wails event and updates the text area
- * with the file text.
- * @param {String} fileText 
+ * Responds to the custom 'onFileRead' Wails event. 
+ * It updates the text area with the file text and updates the current language.
+ * @param {Object} response 
  */
-function onFileRead(fileText) {
-    editor.setValue(fileText);
+function onFileRead(response) {
+    if(response.Status !== "success") return;
+
+    // Update the current language
+    const fileExt = response.Message.match(/\.\w+/)[0];
+    const fileLanguage = supportedLangs.find(language => {
+        return language.extensions.includes(fileExt);
+    });
+    
+    setLanguage(fileLanguage.id);
+
+    // Set the editor text and save status
+    editor.setValue(response.Data);
     saveStatus.innerText = 'saved';
 }
 
@@ -300,9 +314,13 @@ function initMenuItem(item) {
     item.addEventListener('click', () => onMenuItemClick(item));
 }
 
-function setLanguage(lang) {
-    currentLang = lang;
-    setEditorLang(lang);
+/**
+ * Sets the current language and updates the editor's current language.
+ * @param {string} langId - The language id.
+ */
+function setLanguage(langId) {
+    currentLang = langId;
+    setEditorLang(langId);
 }
 
 function initLanguages() {
