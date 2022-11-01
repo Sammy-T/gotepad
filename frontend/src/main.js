@@ -35,7 +35,7 @@ function onConfigLoaded(response) {
  */
 function onNewFile() {
     editor.setValue('');
-    saveStatus.innerText = 'unsaved';
+    updateSaveStatus(false);
 
     // Update the current language
     setLanguage('plaintext');
@@ -60,7 +60,7 @@ function onFileRead(response) {
 
     // Set the editor text and save status
     editor.setValue(response.Data);
-    saveStatus.innerText = 'saved';
+    updateSaveStatus(true);
 }
 
 /**
@@ -69,7 +69,7 @@ function onFileRead(response) {
  */
 function onFileSaved(response) {
     console.log(response);
-    saveStatus.innerText = 'saved';
+    updateSaveStatus(true);
 }
 
 /**
@@ -140,6 +140,19 @@ function triggerFind() {
 function triggerCmdPalette() {
     editor.focus(); // Command palette can only be triggered when the editor has focus
     editor.trigger(null, 'editor.action.quickCommand');
+}
+
+/**
+ * Updates the UI and notifies the backend of the current save status
+ * @param {Boolean} saved - Whether the document is currently saved
+ * @param {Boolean} notify - Whether to notify the backend. Defaults to false.
+ */
+function updateSaveStatus(saved, notify = false) {
+    saveStatus.innerText =  saved ? 'saved' : 'unsaved';
+
+    if(!notify) return;
+
+    EventsEmit('onSaveStatusUpdated', saved, editor.getValue());
 }
 
 /**
@@ -375,7 +388,7 @@ initLanguages();
 resizeObserver.observe(document.querySelector('body > main'));
 
 // Listen for editor content and cursor changes
-editor.onDidChangeModelContent(() => saveStatus.innerText = 'unsaved');
+editor.onDidChangeModelContent(() => updateSaveStatus(false, true));
 editor.onDidChangeCursorPosition(onSelectionChanged);
 
 // Set up the menu and key interactions
