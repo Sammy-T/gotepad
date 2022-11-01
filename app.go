@@ -16,6 +16,12 @@ type App struct {
 	defaultFilename string
 	filePath        string
 	fileFilters     []runtime.FileFilter
+	status          docStatus
+}
+
+type docStatus struct {
+	saved   bool
+	content string
 }
 
 // NewApp creates a new App application struct
@@ -29,6 +35,30 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 
 	runtime.EventsOn(a.ctx, "onLanguagesLoaded", a.onLanguagesLoaded)
+	runtime.EventsOn(a.ctx, "onSaveStatusUpdated", a.onSaveStatusUpdated)
+}
+
+// beforeClose is called when the app is about to quit. It returns a boolean
+// to determine whether the app should be prevented from closing.
+func (a *App) beforeClose(ctx context.Context) (prevent bool) {
+	// Close as normal if the document is already saved or empty
+	if a.status.saved || (a.filePath == "" && a.status.content == "") {
+		return false
+	}
+
+	// Display a dialog to alert the user the current document is unsaved
+	dialog, err := runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+		Type:          runtime.QuestionDialog,
+		Title:         "Unsaved Changes",
+		Message:       "Changes are unsaved. Quit without saving?",
+		DefaultButton: "No",
+	})
+
+	if err != nil {
+		return false
+	}
+
+	return dialog != "Yes"
 }
 
 // onLanguagesLoaded builds the file filters used in the file dialogs
@@ -62,6 +92,27 @@ func (a *App) onLanguagesLoaded(optionalData ...interface{}) {
 	}
 }
 
+// onSaveStatusUpdated updates the app's status with the received data
+func (a *App) onSaveStatusUpdated(optionalData ...interface{}) {
+	if len(optionalData) == 0 {
+		return
+	}
+
+	saved, ok := optionalData[0].(bool)
+	if !ok {
+		log.Println("Error: Status value cannot be asserted to boolean.")
+		return
+	}
+
+	content, ok := optionalData[1].(string)
+	if !ok {
+		log.Println("Error: Content value cannot be asserted to string.")
+		return
+	}
+
+	a.status = docStatus{saved, content}
+}
+
 // UpdateDefaultName sets the default file name to the provided string
 func (a *App) UpdateDefaultName(filename string) {
 	a.defaultFilename = filename
@@ -71,6 +122,8 @@ func (a *App) UpdateDefaultName(filename string) {
 func (a *App) NewFile() {
 	a.filePath = ""
 	a.defaultFilename = "*.txt"
+	a.status = docStatus{}
+
 	runtime.WindowSetTitle(a.ctx, "gotepad")
 	runtime.EventsEmit(a.ctx, "onNewFile")
 }
@@ -102,6 +155,9 @@ func (a *App) OpenFile() {
 		log.Printf("Error reading file. %v", err)
 		return
 	}
+
+	// Update the status
+	a.status = docStatus{true, string(data)}
 
 	response.Status = "success"
 	response.Message = filePath
@@ -151,6 +207,7 @@ func (a *App) Save(contents string) {
 		response.Message = err.Error()
 	} else {
 		response.Status = "success"
+		a.status.saved = true
 	}
 
 	// Emit an event to notify the save status

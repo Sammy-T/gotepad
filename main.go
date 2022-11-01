@@ -37,7 +37,8 @@ func main() {
 			termAction.startup(ctx)
 			appConfig.startup(ctx)
 		},
-		OnDomReady: termAction.onDomReady,
+		OnDomReady:    termAction.onDomReady,
+		OnBeforeClose: app.beforeClose,
 		Bind: []interface{}{
 			app,
 			termAction,
