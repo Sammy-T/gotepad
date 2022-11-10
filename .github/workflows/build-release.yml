@@ -54,7 +54,7 @@ jobs:
       
     - name: Read output file name from wails.json
       id: filename
-      uses: notiz-dev/github-action-json-property@release
+      uses: notiz-dev/github-action-json-property@v0.2.0
       with:
         path: 'wails.json'
         prop_path: 'outputfilename'
