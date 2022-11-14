@@ -60,7 +60,7 @@ function onFileRead(response) {
 
     // Set the editor text and save status
     editor.setValue(response.Data);
-    updateSaveStatus(true);
+    updateSaveStatus(true, true);
 }
 
 /**
