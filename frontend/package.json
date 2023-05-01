@@ -12,6 +12,6 @@
   },
   "dependencies": {
     "@picocss/pico": "^1.5.7",
-    "monaco-editor": "^0.36.1"
+    "monaco-editor": "^0.37.1"
   }
 }
