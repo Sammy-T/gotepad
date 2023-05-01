@@ -11,7 +11,7 @@
     "vite": "^4.3.3"
   },
   "dependencies": {
-    "@picocss/pico": "^1.5.7",
+    "@picocss/pico": "^1.5.10",
     "monaco-editor": "^0.37.1"
   }
 }
