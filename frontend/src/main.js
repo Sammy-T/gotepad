@@ -1,5 +1,6 @@
-import {editor, supportedLangs, setEditorLang} from './ext/editor';
+import './ext/menu';
 import './ext/terminal';
+import {editor, supportedLangs, setEditorLang} from './ext/editor';
 import {Environment, EventsEmit, EventsOn} from '../wailsjs/runtime/runtime';
 import {NewFile, OpenFile, SaveAs, Save, UpdateDefaultName} from '../wailsjs/go/main/App';
 import {ReadConfig, OpenConfigFile} from '../wailsjs/go/main/AppConfig';
@@ -7,7 +8,6 @@ import {ReadConfig, OpenConfigFile} from '../wailsjs/go/main/AppConfig';
 let platform;
 let currentLang = 'plaintext';
 
-const menuDropdowns = document.querySelectorAll('#menu details');
 const menuItems = document.querySelectorAll('#menu a');
 const modals = document.querySelectorAll('dialog');
 const saveStatus = document.querySelector('#save-status');
@@ -316,12 +316,11 @@ function onMenuItemClick(item) {
             OpenConfigFile();
             break;
     }
-
-    // Close any open menu dropdowns
-    menuDropdowns.forEach(dropdown => dropdown.removeAttribute('open'));
 }
 
 function initMenuItem(item) {
+    if(item.parentElement.nodeName === 'SUMMARY') return;
+
     // Replace 'Ctrl' with 'Cmd' on Mac os
     if(platform === 'darwin') {
         const shortcut = item.querySelector('small:last-child');
