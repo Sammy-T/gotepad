@@ -1,14 +1,28 @@
 @import '@picocss/pico';
 
 
+html {
+    --theme-bg-light: #dee6ed;
+    --menu-list-bg-light: rgba(248, 248, 248, 0.944);
+    --menu-list-border-light: rgba(209, 209, 209, 0.83);
+    --menu-list-bg-dark: rgba(44, 44, 44, 0.944);
+    --menu-list-border-dark: rgba(68, 68, 68, 0.83);
+    --menu-list-bg: var(--menu-list-bg-dark);
+    --menu-list-border-col: var(--menu-list-border-dark);
+}
+
 @media (prefers-color-scheme: light) {
     html:not([data-theme=dark]) {
-        background-color: #dee6ed;
+        background-color: var(--theme-bg-light);
+        --menu-list-bg: var(--menu-list-bg-light);
+        --menu-list-border-col: var(--menu-list-border-light);
     }
 }
 
 html[data-theme=light] {
-    background-color: #dee6ed;
+    background-color: var(--theme-bg-light);
+    --menu-list-bg: var(--menu-list-bg-light);
+    --menu-list-border-col: var(--menu-list-border-light);
 }
 
 html, body {
@@ -20,11 +34,7 @@ body {
     flex-direction: column;
 }
 
-#menu {
-    padding: 0 1rem;
-}
-
-#menu li a {
+#menu li > a {
     display: flex;
 }
 
@@ -35,6 +45,10 @@ body {
 #menu ul[role="listbox"] li a {
     min-width: 12rem;
     justify-content: space-between;
+}
+
+#menu details summary::after {
+    content: unset;
 }
 
 body > main {
@@ -61,4 +75,35 @@ body > footer * {
 
 dialog > article {
     min-width: 35vw;
+}
+
+/* Additional menu styling */
+body > nav {
+    padding: 0 var(--block-spacing-horizontal);
+    white-space: nowrap;
+    z-index: 100;
+}
+
+body > nav * {
+    line-height: 1rem;
+}
+
+body > nav details {
+    border-bottom: none;
+    position: relative;
+}
+
+body > nav ul ul {
+    position: absolute;
+    background-color: var(--menu-list-bg);
+    border: 1px solid var(--menu-list-border-col);
+    border-radius: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+body > nav ul ul ul {
+    left: 8.25rem;
+    bottom: -4rem;
 }
