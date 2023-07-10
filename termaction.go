@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -13,7 +14,11 @@ type TerminalAction struct {
 	terminals map[string]Terminal
 }
 
-func NewTerminalAction() *TerminalAction {
+var app *App
+
+func NewTerminalAction(a *App) *TerminalAction {
+	app = a
+
 	return &TerminalAction{
 		terminals: getTerminals(),
 	}
@@ -68,6 +73,11 @@ func (ta *TerminalAction) OpenTerminal(name string) {
 
 	// Create the command
 	cmd := exec.Command(terminal.CmdRoot, terminal.OpenCmd...)
+
+	// Set the command's working directory
+	if len(app.filePath) > 0 {
+		cmd.Dir = filepath.Dir(app.filePath)
+	}
 
 	// Run the command
 	if err := cmd.Run(); err != nil {

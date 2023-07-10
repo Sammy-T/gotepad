@@ -21,7 +21,7 @@ type Response struct {
 func main() {
 	// Create instance of the app structure(s)
 	app := NewApp()
-	termAction := NewTerminalAction()
+	termAction := NewTerminalAction(app)
 
 	appConfig := NewAppConfig()
 
