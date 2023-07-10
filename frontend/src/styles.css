@@ -1,14 +1,28 @@
 @import '@picocss/pico';
 
 
+html {
+    --theme-bg-light: #dee6ed;
+    --menu-list-bg-light: rgba(248, 248, 248, 0.944);
+    --menu-list-border-light: rgba(209, 209, 209, 0.83);
+    --menu-list-bg-dark: rgba(44, 44, 44, 0.944);
+    --menu-list-border-dark: rgba(68, 68, 68, 0.83);
+    --menu-list-bg: var(--menu-list-bg-dark);
+    --menu-list-border-col: var(--menu-list-border-dark);
+}
+
 @media (prefers-color-scheme: light) {
     html:not([data-theme=dark]) {
-        background-color: #dee6ed;
+        background-color: var(--theme-bg-light);
+        --menu-list-bg: var(--menu-list-bg-light);
+        --menu-list-border-col: var(--menu-list-border-light);
     }
 }
 
 html[data-theme=light] {
-    background-color: #dee6ed;
+    background-color: var(--theme-bg-light);
+    --menu-list-bg: var(--menu-list-bg-light);
+    --menu-list-border-col: var(--menu-list-border-light);
 }
 
 html, body {
@@ -80,10 +94,9 @@ body > nav details {
 }
 
 body > nav ul ul {
-    /* width: 12rem; */
     position: absolute;
-    background-color: rgba(44, 44, 44, 0.944);
-    border: 1px solid rgba(68, 68, 68, 0.83);
+    background-color: var(--menu-list-bg);
+    border: 1px solid var(--menu-list-border-col);
     border-radius: 0.25rem;
     display: flex;
     flex-direction: column;
