@@ -1,7 +1,7 @@
 import './ext/menu';
 import './ext/terminal';
 import {editor, supportedLangs, setEditorLang} from './ext/editor';
-import {Environment, EventsEmit, EventsOn} from '../wailsjs/runtime/runtime';
+import {BrowserOpenURL, Environment, EventsEmit, EventsOn} from '../wailsjs/runtime/runtime';
 import {NewFile, OpenFile, SaveAs, Save, UpdateDefaultName} from '../wailsjs/go/main/App';
 import {ReadConfig, OpenConfigFile} from '../wailsjs/go/main/AppConfig';
 
@@ -389,6 +389,9 @@ resizeObserver.observe(document.querySelector('body > main'));
 // Listen for editor content and cursor changes
 editor.onDidChangeModelContent(() => updateSaveStatus(false, true));
 editor.onDidChangeCursorPosition(onSelectionChanged);
+
+// Override Monaco's default link opener so links open in the default browser
+editor.getContribution('editor.linkDetector').openerService.open = (url) => BrowserOpenURL(url);
 
 // Set up the menu and key interactions
 menuItems.forEach(initMenuItem);
