@@ -34,6 +34,10 @@ body {
     flex-direction: column;
 }
 
+#menu {
+    padding: 0 1rem;
+}
+
 #menu li > a {
     display: flex;
 }
