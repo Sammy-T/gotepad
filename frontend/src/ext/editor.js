@@ -27,6 +27,14 @@ self.MonacoEnvironment = {
     }
 };
 
+monaco.editor.addKeybindingRules([
+    // Add alternate keybinding option for opening the command palette
+    {
+        keybinding: monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyP,
+        command: "editor.action.quickCommand"
+    }
+]);
+
 export const editor = monaco.editor.create(document.querySelector('#text-input'), {
     lineNumbers: 'off',
     language: 'plaintext'

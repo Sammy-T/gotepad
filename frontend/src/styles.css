@@ -47,9 +47,19 @@ body {
     box-shadow: 10px 10px 20px rgb(0 0 0 / 10%);
 }
 
+#menu ul[role="listbox"] li {
+    width: 100%;
+    padding: 0 0.25rem;
+}
+
 #menu ul[role="listbox"] li a {
-    min-width: 12rem;
+    width: 100%;
     justify-content: space-between;
+    margin: 0;
+}
+
+#menu ul[role="listbox"] li a small:first-of-type:not(:only-of-type) {
+    margin-right: 1.5rem;
 }
 
 #menu details summary::after {
