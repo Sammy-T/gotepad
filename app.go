@@ -50,7 +50,7 @@ func (a *App) beforeClose(ctx context.Context) (prevent bool) {
 	dialog, err := runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
 		Type:          runtime.QuestionDialog,
 		Title:         "Unsaved Changes",
-		Message:       "Changes are unsaved. Quit without saving?",
+		Message:       "Quit without saving?",
 		DefaultButton: "No",
 	})
 
