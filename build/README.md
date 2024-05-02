@@ -48,6 +48,12 @@ Example:
 
 * `mypic.png` - May be referenced using `runtime.Tray.SetIcon("mypic")` 
 
+## App Icon
+
+If the icon displayed in-app is not updated when updating `appicon.png`, try deleting `windows/icon.ico`. 
+
+The icon displayed in Windows Explorer [might not update immediately](https://github.com/wailsapp/wails/issues/2360#issuecomment-1556070036) but should refresh after signing out or rebooting.
+
 ## Mac
 
 The `darwin` directory holds files specific to Mac builds, such as `Info.plist`. 
