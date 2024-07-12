@@ -32,6 +32,10 @@ func main() {
 		Height:           650,
 		Assets:           assets,
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
+		DragAndDrop: &options.DragAndDrop{
+			EnableFileDrop:     true,
+			DisableWebViewDrop: true,
+		},
 		OnStartup: func(ctx context.Context) {
 			app.startup(ctx)
 			termAction.startup(ctx)

@@ -11,6 +11,10 @@ html {
     --menu-list-border-col: var(--menu-list-border-dark);
 }
 
+main {
+    --wails-drop-target: drop;
+}
+
 @media (prefers-color-scheme: light) {
     html:not([data-theme=dark]) {
         background-color: var(--theme-bg-light);

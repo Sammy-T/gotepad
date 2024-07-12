@@ -1,7 +1,7 @@
 import './ext/menu';
 import './ext/terminal';
 import {editor, supportedLangs, setEditorLang} from './ext/editor';
-import {BrowserOpenURL, Environment, EventsEmit, EventsOn} from '../wailsjs/runtime/runtime';
+import {BrowserOpenURL, Environment, EventsEmit, EventsOn, OnFileDrop} from '../wailsjs/runtime/runtime';
 import {NewFile, OpenFile, SaveAs, Save, UpdateDefaultName} from '../wailsjs/go/main/App';
 import {ReadConfig, OpenConfigFile} from '../wailsjs/go/main/AppConfig';
 
@@ -379,6 +379,9 @@ EventsOn('onFileSaved', onFileSaved);
 
 EventsOn('onRequestSaveAs', () => SaveAs(editor.getValue()));
 EventsOn('onRequestSave', () => Save(editor.getValue()));
+
+//// TODO: Second arg must be `true` to work until the fix already added to master is released.
+OnFileDrop((x, y, paths) => console.log(`wails onfiledrop:`, {x, y}, paths), true);
 
 readPrefs();
 initLanguages();
