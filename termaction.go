@@ -29,7 +29,7 @@ func (ta *TerminalAction) startup(ctx context.Context) {
 	runtime.EventsOn(ta.ctx, "onConfigLoaded", ta.onConfigLoaded)
 }
 
-func (ta *TerminalAction) onDomReady(ctx context.Context) {
+func (ta *TerminalAction) onDomReady(_ context.Context) {
 	response := Response{"success", "terminals mapped", ta.terminals}
 	runtime.EventsEmit(ta.ctx, "onTerminalsMapped", response)
 }
@@ -75,8 +75,8 @@ func (ta *TerminalAction) OpenTerminal(name string) {
 	cmd := exec.Command(terminal.CmdRoot, terminal.OpenCmd...)
 
 	// Set the command's working directory
-	if len(app.filePath) > 0 {
-		cmd.Dir = filepath.Dir(app.filePath)
+	if len(app.filepath) > 0 {
+		cmd.Dir = filepath.Dir(app.filepath)
 	}
 
 	// Run the command
