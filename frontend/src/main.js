@@ -12,6 +12,7 @@ const menuItems = document.querySelectorAll('#menu a');
 const modals = document.querySelectorAll('dialog');
 const saveStatus = document.querySelector('#save-status');
 const lineCount = document.querySelector('#line-count');
+const showLangModalToggle = document.querySelector('a[href="##lang"]');
 
 const modalPrefs = document.querySelector('#modal-prefs');
 const modalLang = document.querySelector('#modal-language');
@@ -247,29 +248,23 @@ function readPrefs() {
 function showLangOpts() {
     modalLang.setAttribute('open', '');
 
+    /** @type {HTMLSelectElement | null} */
     const langSelect = modalLang.querySelector('#language-select');
 
-    // A helper to respond to modal actions
-    function handleAction(action) {
-        if(new URL(action.href).hash === '#confirm') {
-            setLanguage(langSelect.value);
-
-            // Update default filename
-            const language = supportedLangs.find(lang => lang.id === langSelect.value);
-            UpdateDefaultName(`*${language.extensions[0]}`);
-        }
-
+    function onSelect() {
+        setLanguage(langSelect.value);
+        
+        // Update default filename
+        const language = supportedLangs.find(lang => lang.id === langSelect.value);
+        UpdateDefaultName(`*${language.extensions[0]}`);
+        
         modalLang.removeAttribute('open');
     }
 
     // Update the form to match the current option values
     langSelect.value = currentLang;
 
-    // Respond to the modal actions
-    const actions = modalLang.querySelectorAll('footer a');
-    actions.forEach(action => {
-        action.onclick = () => handleAction(action);
-    });
+    langSelect.addEventListener('change', onSelect);
 }
 
 function initModal(modal) {
@@ -337,12 +332,17 @@ function initMenuItem(item) {
 function setLanguage(langId) {
     currentLang = langId;
     setEditorLang(langId);
+
+    const language = supportedLangs.find(lang => lang.id === langId);
+
+    showLangModalToggle.textContent = language.aliases[0];
 }
 
 function initLanguages() {
     // Emit an event with the supported languages to notify the backend
     EventsEmit('onLanguagesLoaded', JSON.stringify(supportedLangs));
 
+    /** @type {HTMLSelectElement | null} */
     const langSelect = document.querySelector('#language-select');
 
     // Populate languages modal menu
@@ -385,6 +385,11 @@ OnFileDrop((x, y, paths) => console.log(`wails onfiledrop:`, {x, y}, paths), tru
 
 readPrefs();
 initLanguages();
+
+showLangModalToggle.addEventListener('click', (event) => {
+    event.preventDefault();
+    showLangOpts();
+});
 
 // Listen for resizes on the editor's parent container
 resizeObserver.observe(document.querySelector('body > main'));
