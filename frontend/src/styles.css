@@ -92,6 +92,20 @@ body > footer * {
     min-width: 5rem;
 }
 
+footer small:has(a[href="##lang"]) {
+    text-align: right;
+}
+
+a[href="##lang"] {
+    padding: calc(var(--pico-spacing) * 0.1) calc(var(--pico-spacing) * 0.25);
+    border-radius: calc(var(--pico-spacing) * 0.2);
+    text-decoration: none;
+}
+
+a[href="##lang"]:hover {
+    background-color: var(--pico-dropdown-hover-background-color);
+}
+
 dialog > article {
     min-width: 35vw;
 }

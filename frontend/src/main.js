@@ -12,6 +12,7 @@ const menuItems = document.querySelectorAll('#menu a');
 const modals = document.querySelectorAll('dialog');
 const saveStatus = document.querySelector('#save-status');
 const lineCount = document.querySelector('#line-count');
+const showLangModalToggle = document.querySelector('a[href="##lang"]');
 
 const modalPrefs = document.querySelector('#modal-prefs');
 const modalLang = document.querySelector('#modal-language');
@@ -337,12 +338,17 @@ function initMenuItem(item) {
 function setLanguage(langId) {
     currentLang = langId;
     setEditorLang(langId);
+
+    const language = supportedLangs.find(lang => lang.id === langId);
+
+    showLangModalToggle.textContent = language.aliases[0];
 }
 
 function initLanguages() {
     // Emit an event with the supported languages to notify the backend
     EventsEmit('onLanguagesLoaded', JSON.stringify(supportedLangs));
 
+    /** @type {HTMLSelectElement | null} */
     const langSelect = document.querySelector('#language-select');
 
     // Populate languages modal menu
@@ -385,6 +391,11 @@ OnFileDrop((x, y, paths) => console.log(`wails onfiledrop:`, {x, y}, paths), tru
 
 readPrefs();
 initLanguages();
+
+showLangModalToggle.addEventListener('click', (event) => {
+    event.preventDefault();
+    showLangOpts();
+});
 
 // Listen for resizes on the editor's parent container
 resizeObserver.observe(document.querySelector('body > main'));
