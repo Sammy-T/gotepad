@@ -248,29 +248,23 @@ function readPrefs() {
 function showLangOpts() {
     modalLang.setAttribute('open', '');
 
+    /** @type {HTMLSelectElement | null} */
     const langSelect = modalLang.querySelector('#language-select');
 
-    // A helper to respond to modal actions
-    function handleAction(action) {
-        if(new URL(action.href).hash === '#confirm') {
-            setLanguage(langSelect.value);
-
-            // Update default filename
-            const language = supportedLangs.find(lang => lang.id === langSelect.value);
-            UpdateDefaultName(`*${language.extensions[0]}`);
-        }
-
+    function onSelect() {
+        setLanguage(langSelect.value);
+        
+        // Update default filename
+        const language = supportedLangs.find(lang => lang.id === langSelect.value);
+        UpdateDefaultName(`*${language.extensions[0]}`);
+        
         modalLang.removeAttribute('open');
     }
 
     // Update the form to match the current option values
     langSelect.value = currentLang;
 
-    // Respond to the modal actions
-    const actions = modalLang.querySelectorAll('footer a');
-    actions.forEach(action => {
-        action.onclick = () => handleAction(action);
-    });
+    langSelect.addEventListener('change', onSelect);
 }
 
 function initModal(modal) {
