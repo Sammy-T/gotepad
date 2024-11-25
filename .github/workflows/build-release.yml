@@ -62,13 +62,12 @@ jobs:
     - name: Create release directory
       run: mkdir -p release
 
-    - name: Build Wails app (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      run: wails build && wails build -tags webkit2_41 -o ${{ steps.filename.outputs.prop }}-linux-alt
-
     - name: Build Wails app
-      if: matrix.os != 'ubuntu-latest'
       run: wails build
+    
+    - name: Build Wails app (Linux-alt)
+      if: matrix.os == 'ubuntu-latest'
+      run: wails build -tags webkit2_41 -o ${{ steps.filename.outputs.prop }}-linux-alt
       
     - name: Zip release file
       uses: vimtor/action-zip@v1
