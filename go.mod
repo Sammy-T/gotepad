@@ -1,7 +1,8 @@
 module sammy-t/gotepad
 
-go 1.22.0
-toolchain go1.23.2
+go 1.23.0
+
+toolchain go1.24.1
 
 require github.com/wailsapp/wails/v2 v2.10.1
 
