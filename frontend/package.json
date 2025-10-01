@@ -8,10 +8,10 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^7.1.5"
+    "vite": "^7.1.7"
   },
   "dependencies": {
     "@picocss/pico": "^2.0.6",
-    "monaco-editor": "^0.52.2"
+    "monaco-editor": "^0.53.0"
   }
 }
