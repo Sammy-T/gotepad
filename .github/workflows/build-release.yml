@@ -71,7 +71,7 @@ jobs:
       run: wails build -tags webkit2_41
       
     - name: Zip release file
-      uses: vimtor/action-zip@v1.2
+      uses: vimtor/action-zip@v1.3
       with:
         files: build/bin
         recursive: false
