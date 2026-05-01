@@ -78,7 +78,7 @@ jobs:
         dest: release/${{ steps.filename.outputs.prop }}_${{ matrix.os-base }}.zip
       
     - name: Upload Build Artifact
-      uses: actions/upload-artifact@v4.4.3
+      uses: actions/upload-artifact@v7.0.1
       with:
         name: ${{ steps.filename.outputs.prop }}_${{ matrix.os-base }}
         path: release/
