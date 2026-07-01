@@ -42,7 +42,7 @@ jobs:
       run: npm run build
 
     - name: Set up Go
-      uses: actions/setup-go@v6.4.0
+      uses: actions/setup-go@v6.5.0
       with:
         go-version-file: 'go.mod'
     
@@ -98,7 +98,7 @@ jobs:
         merge-multiple: true
 
     - name: Release
-      uses: softprops/action-gh-release@v3.0.0
+      uses: softprops/action-gh-release@v3.0.1
       with:
         name: ${{ github.ref_name }}
         tag_name: ${{ github.ref_name }}
