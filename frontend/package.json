@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^8.1.5"
+    "vite": "^8.2.2"
   },
   "dependencies": {
     "@picocss/pico": "^2.0.6",
